@@ -1,6 +1,5 @@
-# lightscreen-touchscreen-detection
+# Thesis Project "Aeolian"
 Uses the OpenCV framework to detect and register touchscreen inputs using a custom stylus
 
-You can find the source code files here or alternatively, you can find the compiled version in the releases or at the website below
+aeolian is an integrated Bot within the GUI, make sure to add API key from ChatGpt open ai to fully utize her 
 
-<a href="https://imaadnisar.github.io/lightscreen-touchscreen-detection">Learn more</a>
