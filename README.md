@@ -3,3 +3,8 @@ Uses the OpenCV framework to detect and register touchscreen inputs using a cust
 
 aeolian is an integrated Bot within the GUI, make sure to add API key from ChatGpt open ai to fully utize her 
 
+dependencies : 
+pip install opencv-python
+pip intall Pillow 
+pip intall mediapipe
+#update next time 
