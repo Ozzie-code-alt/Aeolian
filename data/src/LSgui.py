@@ -6,7 +6,9 @@ import webbrowser  # used to open webpage
 from platform import system # used to identify os
 import LSsharedmodules
 from pyglet import font
-
+from time import ctime
+import speech_recognition as sr
+import pyttsx3 as tts
 
 def mainWin():
     font.add_file("data\src\RobotoMono-Light.ttf")
@@ -84,7 +86,7 @@ def mainWin():
 
     howtouse = tk.Button(sidebar, text="More Info", fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, padx=50, cursor="hand2", command=lambda: howToUse(main, color), highlightthickness=0)
 
-    AeolianVoice = tk.Button(sidebar, text="Aeolian Voice",fg=color["t"], font=btnfont, bg=color["p"], borderwidth=3, padx=50, cursor="hand2",command=lambda: aeoLian(main), highlightthickness=0)
+    AeolianVoice = tk.Button(sidebar, text="Aeolian Voice",fg=color["t"], font=btnfont, bg=color["p"], borderwidth=3, padx=50, cursor="hand2",command=lambda: aeolian(main, color), highlightthickness=0)
 
 
 
@@ -123,7 +125,7 @@ def mainWin():
 
 
 
-    root.mainloop()
+    root.mainloop() # no need to call mainloop in any of the functions 
 
 
 
@@ -453,13 +455,66 @@ def howToUse(main, color):
     githubbtn.grid(column=0, row=0, padx=(120, 0), ipadx=5, ipady=5)
     websitebtn.grid(column=1, row=0, padx=(120, 0), ipadx=5, ipady=5)
 
-def aeoLian(main):
-        for widget in main.winfo_children():
-            widget.grid_forget()
+
+def aeolian(main, color):
+    for widget in main.winfo_children():
+        widget.grid_forget()
+
+    aeolianContent = tk.Frame(main, bg=color["s"])  # create frame
+    voiceBtn = tk.Button(aeolianContent, text="Aeolian Voice Assistant", font=('Arial', 18), bg=color["s"], fg=color["t"], relief="groove", borderwidth=2, highlightthickness=1, cursor="hand2",command = lambda:ask1(AolianLabel) )
+    AolianLabel = tk.Label(aeolianContent,text="A", font=("Arial", 150, "bold"), bg=color["s"], fg=color["t"])
+    voiceBtn.grid(row=0, column=0, sticky="w", padx=(0, 20), pady=25, ipadx=20, ipady=10)
+    AolianLabel.grid(row=1, column=2,)
+    aeolianContent.grid(row=0, column=0, sticky="nsew")
+
+def ask1(AolianLabel):
+    print("ASk")
+    voice_data = recordAudio()
+    print(voice_data)
+    AolianLabel.config(fg="red")
+    respond(voice_data, AolianLabel)
+
+def recordAudio(ask = False):
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        if ask:
+            print(ask)
+        audio = r.adjust_for_ambient_noise(source, duration=0.5 )
+        audio = r.listen(source)
+        voice_data =''
+        try:
+            voice_data = r.recognize_google(audio)
+
+        except sr.UnknownValueError:
+            print("Sorry i didnt get that")
+        except sr.RequestError:
+            print("Sorry Service is down")
+        return voice_data
+
+
+def respond(voice_data, AolianLabel):
+    if('what is your name') in voice_data:
+        AolianLabel.config(fg ="green")
+        print('My name is Aeolian')
+    if 'what time is it' in voice_data:
+        AolianLabel.config(fg ="green")
+        print(ctime())
         
+    if 'search' in voice_data:
+        AolianLabel.config(fg ="green")
+        search = recordAudio('What do you want to search for')
+        url ='https://google.com/search?q=' + search
+        webbrowser.get().open(url)
+        print('Here is what i found ' + search)
 
-
-
+    if 'find a location' in voice_data:
+        AolianLabel.config(fg ="green")
+        location = recordAudio('what location do you want to search for ?')
+        url ='https://google.nl/maps/place/' + location + '/&amp;'
+        webbrowser.get().open(url)
+        print('here is the location of ' + location)
+    if 'stop' in voice_data:
+        exit()
 
 
 mainWin()
