@@ -12,7 +12,7 @@ import pyttsx3 as tts
 
 def mainWin():
     font.add_file("data\src\RobotoMono-Light.ttf")
-    version = "v1.0"
+    version = "v1.5"
     config, default, startup, minimizeToTray = validateFiles()  # obtains values from files
     root = tk.Tk()
 
@@ -355,6 +355,9 @@ def getRes():  # function to obtain the screen resolution from the settings file
 
 def startTracking(root):  # starts tracking
     w, h = getRes()  # obtains resolution
+
+    
+
     with open("data/src/profile.txt", "r") as f:  # obtain profile (calibration) contents
         contents = f.readlines()
     if contents == ['points: \n', 'maskparams: ']:  # pop-up error if profile if empty
