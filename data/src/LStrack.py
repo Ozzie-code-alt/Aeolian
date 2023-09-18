@@ -152,7 +152,6 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
         if not check:
             break
         # generates image from mask
-        frame_height, frame_width, _ = frame.shape
 
         frame = warpPerspective(frame, mat, (1000, 1000)) 
         hsvimg = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -389,7 +388,7 @@ def main():
         ret, image = cap.read()
         if not ret:
             break
-        image = cv.flip(image, 1)  # Mirror display
+        # image = cv.flip(image, 1)  # Mirror display
         debug_image = copy.deepcopy(image)
 
         # Detection implementation #############################################################
