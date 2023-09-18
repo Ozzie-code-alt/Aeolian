@@ -8,7 +8,7 @@ def selectPoints():  # function for user to define corners of screen for warping
     global points  # initialise points var - stores co-ords of points for use during warping
     points = []
   
-    cap = cv2.VideoCapture(0)  # init webcam capture
+    cap = cv2.VideoCapture(1)  # init webcam capture
     LSsharedmodules.popUp("Select points","To calibrate, please select the corners of your screen \n\n Press 'ENTER' to save config or 'R' to reset points", 1)
 
     check, frame = cap.read()
