@@ -25,6 +25,9 @@ from utils import CvFpsCalc
 from model import KeyPointClassifier
 from model import PointHistoryClassifier
 
+
+window = None
+
 def start(root, pointsstr, maskparamsmalformed, width, height):
     # gets literal vals from str
     points = literal_eval(pointsstr)
@@ -51,102 +54,21 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
         window = tk.Tk()
         window.title("Aeolian")
         window.geometry("100x100")
-        
         def button_click():
             print("Button clicked!")
             main()
 
-
-        #     caps = cv2.VideoCapture(0)  # 0 for webcam, or specify the video file path
-        #     while True:
-        #         ret, frame = caps.read()
-        #
-        #         rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        #         output = myHands.process(rgb_image)
-        #         hands = output.multi_hand_landmarks
-        #         if hands:
-        #             for hand in hands:
-        #     #draws hand
-        #     # drawing_utils.draw_landmarks(frame, hand)
-        #                 landmarks = hand.landmark
-        #
-        #                 for id, landmark in enumerate(landmarks):
-        #                     x= int(landmark.x * frame_width)
-        #                     y= int(landmark.y * frame_height)
-        #
-        #
-        #         #index
-        #                     if id == 8:
-        #                         cv2.circle(img = frame, center=(x,y), radius = 8, color=(0,255,255), thickness = 3)
-        #                         x1 = x
-        #                         y1 = y
-        #
-        #             #thumb
-        #                     if id == 4:
-        #                         cv2.circle(img = frame, center=(x,y),radius = 8, color=(0,0,255), thickness = 3)
-        #                         x2 = x
-        #                         y2 = y
-        #                     if id ==20:
-        #                         cv2.circle(img=frame, center=(x, y), radius=8, color=(0, 0, 255), thickness=3)
-        #                         x9 = x
-        #                         y9 = y
-        #                     if id == 8:
-        #                         cv2.circle(img=frame, center=(x, y), radius=8, color=(0, 0, 255), thickness=3)
-        #                         x17 = x
-        #                         y17 = y
-        #
-        #
-        #             distance_thumb_pinky = ((x2 - x9) ** 2 + (y2 - y9) ** 2) ** (0.5) //4
-        #             distance_thumb_index = ((x2 - x17) ** 2 + (y2 - y17) ** 2) ** (0.5) //4
-        #
-        #
-        #             print(distance_thumb_pinky)
-        #             distance = ((x2 - x1) ** 2 + (y2-y1)**2)**(0.5)//4
-        # # print(distance)
-        # # cv2.line(frame, (x1,y1) , (x2,y2), (0,255,0), 5)
-        # # basically if thumb _ pinky finger is greater than thub- index it means its closed
-        #             if distance_thumb_pinky > distance_thumb_index:
-        #     # cv2.line(frame, (x1, y1), (x2, y2), (0, 255, 0), 5)
-        #                 cv2.line(frame, (x9, y9), (x2, y2), (0, 255, 0), 5)
-        #                 print(distance_thumb_pinky)
-        #             if distance > 15:
-        #                 pyautogui.press("volumeup")
-        #             else:
-        #                 pyautogui.press("volumedown")
-        #
-        #
-        #     # zoom in zoom out function
-        #             if distance_thumb_pinky > 19:
-        #                 pyautogui.keyDown('ctrl')
-        #                 pyautogui.keyDown('add')  # Use 'add' key to simulate zoom-in
-        #                 pyautogui.keyUp('add')
-        #                 pyautogui.keyUp('ctrl')
-        #             else:
-        #                 pyautogui.keyDown('ctrl')
-        #                 pyautogui.keyDown('subtract')  # Use 'subtract' key to simulate zoom-out
-        #                 pyautogui.keyUp('subtract')
-        #                 pyautogui.keyUp('ctrl')
-        #
-        #         cv2.imshow('Video', frame)
-        #
-        #         if cv2.waitKey(1) & 0xFF == ord('q'):
-        #             break
-        #
-        #         time.sleep(0.5)
-        #
-        #
-        #     caps.release()
-        #     cv2.destroyWindow('Video')
-
-
         button = tk.Button(window, text="Click Me!", command=button_click)
         button.pack()
         window.mainloop()
-
+        
+        return window
         
     t1=threading.Thread(target=run_tkinter)
     t1.start()
-   
+
+
+            
     while True:
         check, frame = cap.read()
         if not check:
@@ -211,10 +133,13 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
         # cv2.imshow('Image', image)
         # exits once ESC pressed or close button pressed
         if cv2.waitKey(1) & 0xFF == 27:
+            
             break
+        
+       
         # if cv2.getWindowProperty("Aeolian", cv2.WND_PROP_VISIBLE) < 1:
         #     break
-        
+
 
 
 
@@ -455,7 +380,9 @@ def main():
         cv.imshow('Frame2', debug_image)
 
     cap.release()
+ 
     cv2.destroyWindow('Frame2')
+    
 
 
 def select_mode(key, mode):
