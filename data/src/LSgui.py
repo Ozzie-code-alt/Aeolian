@@ -10,6 +10,7 @@ from time import ctime
 import speech_recognition as sr
 import pyttsx3 as tts
 
+
 def mainWin():
     font.add_file("data\src\RobotoMono-Light.ttf")
     version = "v1.5"

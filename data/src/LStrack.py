@@ -10,8 +10,8 @@ from threading import Thread  # used to thread playsound
 import mediapipe as mp
 import tkinter as tk
 import threading
-
-
+import keyboard
+import pyautogui
 import csv
 import copy
 import argparse
@@ -368,8 +368,21 @@ def main():
                     brect,
                     handedness,
                     keypoint_classifier_labels[hand_sign_id],
-                    point_history_classifier_labels[most_common_fg_id[0][0]],
+                    point_history_classifier_labels[most_common_fg_id[0][0]],  
                 )
+                hand_gesture = keypoint_classifier(pre_processed_landmark_list)
+                point_gesture_id = point_history_classifier(pre_processed_point_history_list)
+                print(hand_gesture)
+                if hand_gesture == 1:
+                    perform_action("fistClosed")
+                elif hand_gesture == 2:
+                    perform_action("pointerUp")
+                elif hand_gesture == 4:
+                    perform_action("smolC")
+                elif hand_gesture == 5:
+                    perform_action("bigC")
+
+
         else:
             point_history.append([0, 0])
 
@@ -383,6 +396,22 @@ def main():
  
     cv2.destroyWindow('Frame2')
     
+def perform_action(gesture):
+    if gesture == "pointerUp":
+        keyboard.press_and_release("volume up")
+    elif gesture == "fistClosed":
+        keyboard.press_and_release("volume down")
+    elif gesture == "smolC":
+        # Simulate Ctrl + '+' for zoom in
+        pyautogui.keyDown("ctrl")
+        pyautogui.scroll(100)
+        pyautogui.keyUp("ctrl")
+    elif gesture == "bigC":
+        # Simulate Ctrl + '-' for zoom out
+        pyautogui.keyDown("ctrl")
+        pyautogui.scroll(-100)
+        pyautogui.keyUp("ctrl")
+
 
 
 def select_mode(key, mode):
