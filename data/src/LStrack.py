@@ -381,6 +381,8 @@ def main():
                     perform_action("smolC")
                 elif hand_gesture == 5:
                     perform_action("bigC")
+                elif hand_gesture == 3:
+                    perform_action("ok")
 
 
         else:
@@ -411,6 +413,8 @@ def perform_action(gesture):
         pyautogui.keyDown("ctrl")
         pyautogui.scroll(-100)
         pyautogui.keyUp("ctrl")
+    elif gesture == "ok":
+        keyboard.press("esc")
 
 
 

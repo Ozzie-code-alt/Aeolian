@@ -8,8 +8,6 @@ def selectPoints():  # function for user to define corners of screen for warping
     global points  # initialise points var - stores co-ords of points for use during warping
     points = []
 
-
-
     cap = cv2.VideoCapture(1)  # init webcam capture
     LSsharedmodules.popUp("Select points","To calibrate, please select the corners of your screen \n\nPress 'ENTER' to save config or 'R' to reset points", 1)
 
@@ -49,10 +47,13 @@ def selectPoints():  # function for user to define corners of screen for warping
             confirm = LSsharedmodules.popUp("Save Profile", "Do you want to save this profile?", 2)
             cv2.destroyAllWindows()
             return (points, maskparams) if confirm else (False, False)
+        #hover function
+
 
     cap.release()
     cv2.destroyWindow('Calibration')
     return (False, False)
+
 
 
 def click(event, x, y, flags, params,):  # event function to detect user calibration clicks
@@ -237,10 +238,47 @@ def manualMaskParams(img, hsv):
 
 
 def automaticMaskParams(img, hsv):  # automatic masking settings for blue light
-    lower = np.array([100, 50, 20])
-    upper = np.array([130, 255, 255])
-    
-    return [lower, upper]
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Apply a Gaussian blur to reduce noise
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    # Use the cv2.threshold function to create a binary image based on the detected light
+    _, thresholded = cv2.threshold(blurred, 200, 255, cv2.THRESH_BINARY)
+
+    # Find contours in the binary image
+    contours, _ = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    if contours:
+        # Find the largest contour (assumed to be the light source)
+        largest_contour = max(contours, key=cv2.contourArea)
+
+        # Get the centroid of the largest contour
+        M = cv2.moments(largest_contour)
+        if M["m00"] != 0:
+            cx = int(M["m10"] / M["m00"])
+            cy = int(M["m01"] / M["m00"])
+        else:
+            cx, cy = 0, 0
+
+        # Convert the centroid pixel color to HSV
+        target_color_hsv = cv2.cvtColor(np.uint8([[img[cy, cx]]]), cv2.COLOR_BGR2HSV)[0][0]
+
+        # Define a range for detecting the color (you may need to adjust this range)
+        color_range = np.array([20, 50, 50])  # Adjust these values as needed
+
+        # Calculate the lower and upper bounds for the color detection
+        lower = target_color_hsv - color_range
+        upper = target_color_hsv + color_range
+
+        # Ensure that the values are within the valid HSV range (0-180 for H, 0-255 for S and V)
+        lower = np.clip(lower, [0, 0, 0], [180, 255, 255])
+        upper = np.clip(upper, [0, 0, 0], [180, 255, 255])
+
+        return [lower, upper]
+
+    # If no contours are found, return a default value
+    return [np.array([0, 0, 0]), np.array([180, 255, 255])]
 
 
 def showMaskCreation(maskparams, frame, hsv, saved):
