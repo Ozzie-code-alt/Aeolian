@@ -7,7 +7,9 @@ def selectPoints():  # function for user to define corners of screen for warping
 
     global points  # initialise points var - stores co-ords of points for use during warping
     points = []
-  
+
+
+
     cap = cv2.VideoCapture(1)  # init webcam capture
     LSsharedmodules.popUp("Select points","To calibrate, please select the corners of your screen \n\nPress 'ENTER' to save config or 'R' to reset points", 1)
 
@@ -112,6 +114,38 @@ def maskImage(cap, mat):
                 cv2.createTrackbar("Upper H", n, 255, 255, noFunc)
                 cv2.createTrackbar("Upper S", n, 255, 255, noFunc)
                 cv2.createTrackbar("Upper V", n, 255, 255, noFunc)
+                imageHEHE = cv2.imread('data\images\image.jpg')
+
+                # Define the text to be added
+                text = 'RED Value:  Lower Hue: 0 , Lower Saturation: 101 or 99 , Lower Value: 101 or 99'
+                text1_0 = 'Upper Hue: 10,  Upper Saturation: 255, Upper Value: 255 '
+
+                text2 = "Blue Value: Lower Hue: 101 , Lower Saturation: 142 , Lower Value: 88"
+                text2_0 = 'Upper Hue: 108,  Upper Saturation: 255, Upper Value: 255 '
+                # Define the font settings (font type, size, color, etc.)
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                font_scale = 0.5  # Font scale factor
+                font_color1 = (000, 000, 255)  
+
+                font_color = (255, 51, 51)  # Font color in BGR format (white in this case)
+                thickness = 2  # Thickness of the text
+
+                # Specify the position where you want to add the text (x, y)
+                position = (0,40) #Red
+                position1_0 = (0,80)
+                position2 = (0,150) #Blue
+                position2_0 = (0,190) 
+                # Use the putText function to add text to the imageHEHE
+                cv2.putText(imageHEHE, text, position, font, font_scale, font_color1, thickness)
+                cv2.putText(imageHEHE, text1_0, position1_0, font, font_scale, font_color1, thickness)
+
+                cv2.putText(imageHEHE, text2, position2, font, font_scale, font_color, thickness)
+                cv2.putText(imageHEHE, text2_0, position2_0, font, font_scale, font_color, thickness)
+                
+                # Save or display the imageHEHE with the added text
+                cv2.imwrite('output_image.jpg', imageHEHE)
+                # Display the imageHEHE (optional)
+                cv2.imshow('Sample BGR Values', imageHEHE)
             selected = True
 
         if not saved:  # exits once maskparams created and saved
