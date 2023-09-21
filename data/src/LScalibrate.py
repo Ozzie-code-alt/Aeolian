@@ -122,12 +122,26 @@ def maskImage(cap, mat):
 
                 text2 = "Blue Value: Lower Hue: 101 , Lower Saturation: 142 , Lower Value: 88"
                 text2_0 = 'Upper Hue: 108,  Upper Saturation: 255, Upper Value: 255 '
+
+                text3 = "Green Value: Lower Hue: 36 , Lower Saturation: 50 , Lower Value: 69 or 71"
+                text3_0 = "Green Value: Upper Hue: 90 , Upper Saturation: 255 , Upper Value: 255"
+
+                text4 = "Purple Value: Lower Hue: 129 , Lower Saturation: 50 , Lower Value: 69 or 71"
+                text4_0 = "Purple Value: Upper Hue: 158 , Upper Saturation: 255 , Upper Value: 255"
+
+                text5 = "Orange Value: Lower Hue: 10 , Lower Saturation: 50 , Lower Value: 69 or 71"
+                text5_0 = "Orange Value: Upper Hue: 24 , Upper Saturation: 255 , Upper Value: 255"
+
                 # Define the font settings (font type, size, color, etc.)
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 font_scale = 0.5  # Font scale factor
-                font_color1 = (000, 000, 255)  
+                font_color1 = (000, 000, 255)  # font color Red
+                font_color = (255, 51, 51)  # Font color Blue
+                font_color3 = (0, 128, 0)  # Font color green
+                font_color4 = (128,0,128) # font color purple
+                font_color5 =(0,165,255)
 
-                font_color = (255, 51, 51)  # Font color in BGR format (white in this case)
+
                 thickness = 2  # Thickness of the text
 
                 # Specify the position where you want to add the text (x, y)
@@ -135,6 +149,15 @@ def maskImage(cap, mat):
                 position1_0 = (0,80)
                 position2 = (0,150) #Blue
                 position2_0 = (0,190) 
+
+                position3 = (0,260)#Green
+                position3_0 = (0, 300)
+                
+                position4 = (0,370) #Purple
+                position4_0 = (0,410)
+
+                position5 = (0,480) #Orange
+                position5_0 = (0, 520)
                 # Use the putText function to add text to the imageHEHE
                 cv2.putText(imageHEHE, text, position, font, font_scale, font_color1, thickness)
                 cv2.putText(imageHEHE, text1_0, position1_0, font, font_scale, font_color1, thickness)
@@ -142,6 +165,14 @@ def maskImage(cap, mat):
                 cv2.putText(imageHEHE, text2, position2, font, font_scale, font_color, thickness)
                 cv2.putText(imageHEHE, text2_0, position2_0, font, font_scale, font_color, thickness)
                 
+                cv2.putText(imageHEHE, text3, position3, font, font_scale, font_color3, thickness)
+                cv2.putText(imageHEHE, text3_0, position3_0, font, font_scale, font_color3, thickness)
+
+                cv2.putText(imageHEHE, text4, position4, font, font_scale, font_color4, thickness)
+                cv2.putText(imageHEHE, text4_0, position4_0, font, font_scale, font_color4, thickness)
+
+                cv2.putText(imageHEHE, text5, position5, font, font_scale, font_color5, thickness)
+                cv2.putText(imageHEHE, text5_0, position5_0, font, font_scale, font_color5, thickness)
                 # Save or display the imageHEHE with the added text
                 cv2.imwrite('output_image.jpg', imageHEHE)
                 # Display the imageHEHE (optional)
@@ -171,6 +202,7 @@ def maskImage(cap, mat):
 
     cap.release()
     cv2.destroyAllWindows()
+    cv2.destroyWindow("Sample BGR Values")
     return False
 
 
