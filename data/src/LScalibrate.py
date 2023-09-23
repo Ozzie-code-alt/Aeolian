@@ -2,6 +2,9 @@ import cv2
 import numpy as np
 import LSsharedmodules
 import math
+import tkinter as tk
+from tkinter import simpledialog
+
 
 def selectPoints():  # function for user to define corners of screen for warping
 
@@ -95,6 +98,17 @@ def warpImage(cap, points):
 def maskImage(cap, mat):
     saved = False
     selected = False
+    
+    def get_hsv_value(color_name):
+        color_values = {
+            "Red": ([0, 101, 101], [10, 255, 255]),
+            "Blue": ([101, 142, 88], [108, 255, 255]),
+            "Green": ([36, 50, 69], [90, 255, 255]),
+            "Purple": ([129, 50, 69], [158, 255, 255]),
+            "Orange": ([10, 50, 69], [24, 255, 255])
+        }
+        return color_values.get(color_name, ([0, 0, 0], [0, 0, 0]))
+    
     while True:
         check, frame = cap.read()
         if not check:
@@ -104,85 +118,95 @@ def maskImage(cap, mat):
         hsvimg = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)  # converts img to hsv for masking
 
         if not selected:
-            auto = LSsharedmodules.popUp("Select a masking method", "Would you like to automatically generate a mask?\nPress 'No' to manually create a mask.\n\nIf unsure, automatic mask generation is recommended", 2)  # branches to auto or manual masking
+            auto = LSsharedmodules.popUp("Select a masking method", "Would you like to automatically generate a mask?\nPress 'No' to manually create a mask.\n\nIf unsure, automatic mask generation is recommended",2 )  # branches to auto or manual masking
             if not auto:
-                n = "Create Mask"  # Creates trackbar menu
-                cv2.namedWindow(n)
-                cv2.createTrackbar("Lower H", n, 0, 255, noFunc)
-                cv2.createTrackbar("Lower S", n, 0, 255, noFunc)
-                cv2.createTrackbar("Lower V", n, 0, 255, noFunc)
 
-                cv2.createTrackbar("Upper H", n, 255, 255, noFunc)
-                cv2.createTrackbar("Upper S", n, 255, 255, noFunc)
-                cv2.createTrackbar("Upper V", n, 255, 255, noFunc)
-                imageHEHE = cv2.imread('data\images\image.jpg')
+                color_name = simpledialog.askstring("Color Selection", "Select a color (Red, Blue, Green, Purple, Orange):")
+                if color_name is None:
+                    n = "Create Mask"  # Creates trackbar menu
+                    cv2.namedWindow(n)
+                    cv2.createTrackbar("Lower H", n, 0, 255, noFunc)
+                    cv2.createTrackbar("Lower S", n, 0, 255, noFunc)
+                    cv2.createTrackbar("Lower V", n, 0, 255, noFunc)
 
-                # Define the text to be added
-                text = 'RED Value:  Lower Hue: 0 , Lower Saturation: 101 or 99 , Lower Value: 101 or 99'
-                text1_0 = 'Upper Hue: 10,  Upper Saturation: 255, Upper Value: 255 '
+                    cv2.createTrackbar("Upper H", n, 255, 255, noFunc)
+                    cv2.createTrackbar("Upper S", n, 255, 255, noFunc)
+                    cv2.createTrackbar("Upper V", n, 255, 255, noFunc)
+                    imageHEHE = cv2.imread('data\images\image.jpg')
 
-                text2 = "Blue Value: Lower Hue: 101 , Lower Saturation: 142 , Lower Value: 88"
-                text2_0 = 'Upper Hue: 108,  Upper Saturation: 255, Upper Value: 255 '
+                    # Define the text to be added
+                    text = 'RED Value:  Lower Hue: 0 , Lower Saturation: 101 or 99 , Lower Value: 101 or 99'
+                    text1_0 = 'Upper Hue: 10,  Upper Saturation: 255, Upper Value: 255 '
 
-                text3 = "Green Value: Lower Hue: 36 , Lower Saturation: 50 , Lower Value: 69 or 71"
-                text3_0 = "Green Value: Upper Hue: 90 , Upper Saturation: 255 , Upper Value: 255"
+                    text2 = "Blue Value: Lower Hue: 101 , Lower Saturation: 142 , Lower Value: 88"
+                    text2_0 = 'Upper Hue: 108,  Upper Saturation: 255, Upper Value: 255 '
 
-                text4 = "Purple Value: Lower Hue: 129 , Lower Saturation: 50 , Lower Value: 69 or 71"
-                text4_0 = "Purple Value: Upper Hue: 158 , Upper Saturation: 255 , Upper Value: 255"
+                    text3 = "Green Value: Lower Hue: 36 , Lower Saturation: 50 , Lower Value: 69 or 71"
+                    text3_0 = "Green Value: Upper Hue: 90 , Upper Saturation: 255 , Upper Value: 255"
 
-                text5 = "Orange Value: Lower Hue: 10 , Lower Saturation: 50 , Lower Value: 69 or 71"
-                text5_0 = "Orange Value: Upper Hue: 24 , Upper Saturation: 255 , Upper Value: 255"
+                    text4 = "Purple Value: Lower Hue: 129 , Lower Saturation: 50 , Lower Value: 69 or 71"
+                    text4_0 = "Purple Value: Upper Hue: 158 , Upper Saturation: 255 , Upper Value: 255"
 
-                # Define the font settings (font type, size, color, etc.)
-                font = cv2.FONT_HERSHEY_SIMPLEX
-                font_scale = 0.5  # Font scale factor
-                font_color1 = (000, 000, 255)  # font color Red
-                font_color = (255, 51, 51)  # Font color Blue
-                font_color3 = (0, 128, 0)  # Font color green
-                font_color4 = (128,0,128) # font color purple
-                font_color5 =(0,165,255)
+                    text5 = "Orange Value: Lower Hue: 10 , Lower Saturation: 50 , Lower Value: 69 or 71"
+                    text5_0 = "Orange Value: Upper Hue: 24 , Upper Saturation: 255 , Upper Value: 255"
+
+                    # Define the font settings (font type, size, color, etc.)
+                    font = cv2.FONT_HERSHEY_SIMPLEX
+                    font_scale = 0.5  # Font scale factor
+                    font_color1 = (000, 000, 255)  # font color Red
+                    font_color = (255, 51, 51)  # Font color Blue
+                    font_color3 = (0, 128, 0)  # Font color green
+                    font_color4 = (128,0,128) # font color purple
+                    font_color5 =(0,165,255)
 
 
-                thickness = 2  # Thickness of the text
+                    thickness = 2  # Thickness of the text
 
-                # Specify the position where you want to add the text (x, y)
-                position = (0,40) #Red
-                position1_0 = (0,80)
-                position2 = (0,150) #Blue
-                position2_0 = (0,190) 
+                    # Specify the position where you want to add the text (x, y)
+                    position = (0,40) #Red
+                    position1_0 = (0,80)
+                    position2 = (0,150) #Blue
+                    position2_0 = (0,190) 
 
-                position3 = (0,260)#Green
-                position3_0 = (0, 300)
-                
-                position4 = (0,370) #Purple
-                position4_0 = (0,410)
+                    position3 = (0,260)#Green
+                    position3_0 = (0, 300)
+                    
+                    position4 = (0,370) #Purple
+                    position4_0 = (0,410)
 
-                position5 = (0,480) #Orange
-                position5_0 = (0, 520)
-                # Use the putText function to add text to the imageHEHE
-                cv2.putText(imageHEHE, text, position, font, font_scale, font_color1, thickness)
-                cv2.putText(imageHEHE, text1_0, position1_0, font, font_scale, font_color1, thickness)
+                    position5 = (0,480) #Orange
+                    position5_0 = (0, 520)
+                    # Use the putText function to add text to the imageHEHE
+                    cv2.putText(imageHEHE, text, position, font, font_scale, font_color1, thickness)
+                    cv2.putText(imageHEHE, text1_0, position1_0, font, font_scale, font_color1, thickness)
 
-                cv2.putText(imageHEHE, text2, position2, font, font_scale, font_color, thickness)
-                cv2.putText(imageHEHE, text2_0, position2_0, font, font_scale, font_color, thickness)
-                
-                cv2.putText(imageHEHE, text3, position3, font, font_scale, font_color3, thickness)
-                cv2.putText(imageHEHE, text3_0, position3_0, font, font_scale, font_color3, thickness)
+                    cv2.putText(imageHEHE, text2, position2, font, font_scale, font_color, thickness)
+                    cv2.putText(imageHEHE, text2_0, position2_0, font, font_scale, font_color, thickness)
+                    
+                    cv2.putText(imageHEHE, text3, position3, font, font_scale, font_color3, thickness)
+                    cv2.putText(imageHEHE, text3_0, position3_0, font, font_scale, font_color3, thickness)
 
-                cv2.putText(imageHEHE, text4, position4, font, font_scale, font_color4, thickness)
-                cv2.putText(imageHEHE, text4_0, position4_0, font, font_scale, font_color4, thickness)
+                    cv2.putText(imageHEHE, text4, position4, font, font_scale, font_color4, thickness)
+                    cv2.putText(imageHEHE, text4_0, position4_0, font, font_scale, font_color4, thickness)
 
-                cv2.putText(imageHEHE, text5, position5, font, font_scale, font_color5, thickness)
-                cv2.putText(imageHEHE, text5_0, position5_0, font, font_scale, font_color5, thickness)
-                # Save or display the imageHEHE with the added text
-                cv2.imwrite('output_image.jpg', imageHEHE)
-                # Display the imageHEHE (optional)
-                cv2.imshow('Sample BGR Values', imageHEHE)
+                    cv2.putText(imageHEHE, text5, position5, font, font_scale, font_color5, thickness)
+                    cv2.putText(imageHEHE, text5_0, position5_0, font, font_scale, font_color5, thickness)
+                    # Save or display the imageHEHE with the added text
+                    cv2.imwrite('output_image.jpg', imageHEHE)
+                    # Display the imageHEHE (optional)
+                    cv2.imshow('Sample BGR Values', imageHEHE)
+
+   
             selected = True
 
         if not saved:  # exits once maskparams created and saved
             if auto:
                 maskparams = automaticMaskParams(frame, hsvimg)
+                saved = True
+            elif not auto and color_name is not None:
+                lower_hsv, upper_hsv = get_hsv_value(color_name)
+                maskparams = [(lower_hsv[0], lower_hsv[1], lower_hsv[2]), (upper_hsv[0], upper_hsv[1], upper_hsv[2])]
+                showMaskCreation(maskparams, frame, hsvimg, saved)  # displays image and trackbar menu
                 saved = True
             else:
                 maskparams = manualMaskParams(frame, hsvimg)
@@ -190,7 +214,7 @@ def maskImage(cap, mat):
                     maskparams = maskparams[:-1]
                     saved = True
                 showMaskCreation(maskparams, frame, hsvimg, saved)  # displays image and trackbar menu
-
+                
         if saved:
             return maskparams
 
@@ -237,7 +261,7 @@ def manualMaskParams(img, hsv):
     return [lower, upper]
 
 
-def automaticMaskParams(img, hsv):  # automatic masking settings for blue light
+def automaticMaskParams(img, hsv):  # Automatic Settings (ALPHA)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # Apply a Gaussian blur to reduce noise
@@ -279,6 +303,8 @@ def automaticMaskParams(img, hsv):  # automatic masking settings for blue light
 
     # If no contours are found, return a default value
     return [np.array([0, 0, 0]), np.array([180, 255, 255])]
+
+
 
 
 def showMaskCreation(maskparams, frame, hsv, saved):

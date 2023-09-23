@@ -12,7 +12,7 @@ def popUp(title, txt, type):  # function creates pop-up
     if type == 1:  # creates info/yesno pop-up depending on passed arguments
         messagebox.showinfo(title, txt)
     else:
-        return messagebox.askyesno(title, txt)
+        return messagebox.askyesnocancel(title, txt)
 
 
 def warning(title, txt):  # displays errorbox
