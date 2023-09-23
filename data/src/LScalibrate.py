@@ -4,7 +4,7 @@ import LSsharedmodules
 import math
 import tkinter as tk
 from tkinter import simpledialog
-
+import keyboard as kb
 
 def selectPoints():  # function for user to define corners of screen for warping
 
@@ -200,12 +200,15 @@ def maskImage(cap, mat):
             selected = True
 
         if not saved:  # exits once maskparams created and saved
+
             if auto:
                 maskparams = automaticMaskParams(frame, hsvimg)
-                saved = True
+                showMaskCreation(maskparams, frame, hsvimg, saved)  # displays image and trackbar menu
+                # work tom 
             elif not auto and color_name is not None:
                 lower_hsv, upper_hsv = get_hsv_value(color_name)
-                maskparams = [(lower_hsv[0], lower_hsv[1], lower_hsv[2]), (upper_hsv[0], upper_hsv[1], upper_hsv[2])]
+                maskparams = np.array([lower_hsv[0], lower_hsv[1], lower_hsv[2]]), np.array([upper_hsv[0], upper_hsv[1], upper_hsv[2]])
+                print(maskparams)
                 showMaskCreation(maskparams, frame, hsvimg, saved)  # displays image and trackbar menu
                 saved = True
             else:
