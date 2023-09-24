@@ -5,7 +5,7 @@ import math
 import tkinter as tk
 from tkinter import simpledialog
 import keyboard as kb
-
+import time 
 def selectPoints():  # function for user to define corners of screen for warping
 
     global points  # initialise points var - stores co-ords of points for use during warping
@@ -98,7 +98,7 @@ def warpImage(cap, points):
 def maskImage(cap, mat):
     saved = False
     selected = False
-    
+    n = "Create Mask"
     def get_hsv_value(color_name):
         color_values = {
             "Red": ([0, 101, 101], [10, 255, 255]),
@@ -195,16 +195,18 @@ def maskImage(cap, mat):
                     cv2.imwrite('output_image.jpg', imageHEHE)
                     # Display the imageHEHE (optional)
                     cv2.imshow('Sample BGR Values', imageHEHE)
+           
 
-   
             selected = True
 
         if not saved:  # exits once maskparams created and saved
 
             if auto:
                 maskparams = automaticMaskParams(frame, hsvimg)
-                showMaskCreation(maskparams, frame, hsvimg, saved)  # displays image and trackbar menu
-                # work tom 
+                showMaskCreation(maskparams, frame, hsvimg, saved)  # displays image and trackbar menu               
+                if kb.press_and_release('enter'):
+                    saved = True
+
             elif not auto and color_name is not None:
                 lower_hsv, upper_hsv = get_hsv_value(color_name)
                 maskparams = np.array([lower_hsv[0], lower_hsv[1], lower_hsv[2]]), np.array([upper_hsv[0], upper_hsv[1], upper_hsv[2]])
@@ -217,9 +219,12 @@ def maskImage(cap, mat):
                     maskparams = maskparams[:-1]
                     saved = True
                 showMaskCreation(maskparams, frame, hsvimg, saved)  # displays image and trackbar menu
-                
+
+
         if saved:
             return maskparams
+        if cv2.getWindowProperty(n, cv2.WND_PROP_VISIBLE) < 1:  # Check if the window exists
+            saved = True
 
         if cv2.waitKey(1) == 27:
             break
@@ -316,3 +321,21 @@ def showMaskCreation(maskparams, frame, hsv, saved):
     cv2.imshow("Windows", img)
     if saved:
         cv2.destroyAllWindows()
+    return maskparams
+
+# def showMaskCreation(maskparams, frame, hsv, saved):
+#     while True:
+#         mask = cv2.inRange(hsv, maskparams[0], maskparams[1])
+#         img = cv2.bitwise_and(frame, frame, mask=mask)
+#         cv2.imshow("Windows", img)
+#         key = cv2.waitKey(1)
+
+#         # Handle user interaction
+#         if key == 27:  # ESC key to exit
+#             break
+#         elif key == 13:  # Enter key to save
+#             cv2.destroyAllWindows()
+#             return maskparams
+
+#     cv2.destroyAllWindows()
+#     return maskparams
