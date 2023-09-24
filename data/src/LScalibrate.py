@@ -203,23 +203,18 @@ def maskImage(cap, mat):
 
             if auto:
                 maskparams = automaticMaskParams(frame, hsvimg)
-                showMaskCreation(maskparams, frame, hsvimg, saved)  # displays image and trackbar menu               
-                if kb.press_and_release('enter'):
-                    saved = True
-
             elif not auto and color_name is not None:
                 lower_hsv, upper_hsv = get_hsv_value(color_name)
                 maskparams = np.array([lower_hsv[0], lower_hsv[1], lower_hsv[2]]), np.array([upper_hsv[0], upper_hsv[1], upper_hsv[2]])
-                print(maskparams)
-                showMaskCreation(maskparams, frame, hsvimg, saved)  # displays image and trackbar menu
-                saved = True
             else:
                 maskparams = manualMaskParams(frame, hsvimg)
                 if len(maskparams) == 3:  # checks returned values to see if values saved
                     maskparams = maskparams[:-1]
                     saved = True
-                showMaskCreation(maskparams, frame, hsvimg, saved)  # displays image and trackbar menu
 
+            showMaskCreation(maskparams, frame, hsvimg, saved)
+            if kb.press_and_release('enter'):
+                saved = True
 
         if saved:
             return maskparams
@@ -339,3 +334,6 @@ def showMaskCreation(maskparams, frame, hsv, saved):
 
 #     cv2.destroyAllWindows()
 #     return maskparams
+
+
+

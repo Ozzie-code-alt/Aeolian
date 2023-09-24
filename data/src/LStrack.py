@@ -414,7 +414,7 @@ def perform_action(gesture):
         pyautogui.scroll(-100)
         pyautogui.keyUp("ctrl")
     elif gesture == "ok":
-        keyboard.press("esc")
+        keyboard.press_and_release("esc")
 
 
 
