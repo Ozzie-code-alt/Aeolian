@@ -495,7 +495,6 @@ def recordAudio(ask = False):
             print("Sorry Service is down")
         return voice_data
 
-
 def respond(voice_data, AolianLabel):
     if('what is your name') in voice_data:
         AolianLabel.config(fg ="green")
