@@ -1,12 +1,7 @@
 import math  # used to calculate max distance between points
-from cv2 import warpPerspective  # used in warping image
-from LScalibrate import warpImage  # used to warp image
 import cv2
-from ast import literal_eval  # gets settings from file and gets literal type from str type
 import numpy as np
 import mouse  # used to control mouse (dragging and drawing)
-from playsound import playsound  # used for ping sound when changing modes
-from threading import Thread  # used to thread playsound
 import mediapipe as mp
 import tkinter as tk
 import threading
@@ -16,17 +11,23 @@ import csv
 import copy
 import argparse
 import itertools
-from collections import Counter
-from collections import deque
-
 import cv2 as cv
 
+
+from collections import Counter
+from collections import deque
+from cv2 import warpPerspective  # used in warping image
+from ast import literal_eval  # gets settings from file and gets literal type from str type
+from LScalibrate import warpImage  # used to warp image
+from playsound import playsound  # used for ping sound when changing modes
+from threading import Thread  # used to thread playsound
+from threading import Lock
 from utils import CvFpsCalc
 from model import KeyPointClassifier
 from model import PointHistoryClassifier
 
 
-window = None
+# window = None
 
 def start(root, pointsstr, maskparamsmalformed, width, height):
     # gets literal vals from str
@@ -49,24 +50,29 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
     # drawing_utils = mp.solutions.drawing_utils
 #Hands Line Var
     # x1 = y1 = x2 = y2 = 0
+    
 
-    def run_tkinter():
-        window = tk.Tk()
-        window.title("Aeolian")
-        window.geometry("100x100")
+    def run_tkinter(lock):
+        global newwindow
+        newwindow = tk.Tk()
+        newwindow.title("Aeolian")
+        newwindow.geometry("500x500")
         def button_click():
-            print("Button clicked!")
+            # print("Button clicked!")
             main()
 
-        button = tk.Button(window, text="Click Me!", command=button_click)
+        button = tk.Button(newwindow, text="Click Me!", command=button_click)
         button.pack()
-        window.mainloop()
+        newwindow.mainloop()
+        return newwindow
         
-        return window
-        
-    t1=threading.Thread(target=run_tkinter)
-    t1.start()
 
+
+        
+        ## runs tkinter independently from the program and separately 
+    lock = threading.Lock()
+    t1=threading.Thread(target=run_tkinter,args=(lock,))
+    t1.start()
 
             
     while True:
@@ -133,7 +139,7 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
         # cv2.imshow('Image', image)
         # exits once ESC pressed or close button pressed
         if cv2.waitKey(1) & 0xFF == 27:
-            
+            newwindow.quit()
             break
         
        
@@ -154,6 +160,11 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
     root.deiconify()
 
 
+
+
+def close_Tkinter():
+    # newwindow.deiconify()
+    pass
 
     
 def setHold(count, hold, pts):
@@ -397,6 +408,8 @@ def main():
     cap.release()
  
     cv2.destroyWindow('Frame2')
+    close_Tkinter()
+
     
 def perform_action(gesture):
     if gesture == "pointerUp":
@@ -414,7 +427,7 @@ def perform_action(gesture):
         pyautogui.scroll(-100)
         pyautogui.keyUp("ctrl")
     elif gesture == "ok":
-        keyboard.press_and_release("q")
+        keyboard.press("q")
 
 
 
