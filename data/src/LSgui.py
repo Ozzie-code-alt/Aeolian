@@ -1,14 +1,16 @@
-import tkinter as tk
-from LScalibrate import selectPoints
-from LStrack import start
-from PIL import Image, ImageTk
-import webbrowser  # used to open webpage
-from platform import system # used to identify os
-import LSsharedmodules
-from pyglet import font
-from time import ctime
-import speech_recognition as sr
 import pyttsx3 as tts
+import tkinter as tk
+import speech_recognition as sr
+import LSsharedmodules
+import webbrowser  # used to open webpage
+
+
+from PIL import Image, ImageTk
+from platform import system # used to identify os
+from pyglet import font
+from LStrack import start
+from time import ctime
+from LScalibrate import selectPoints
 
 
 def mainWin():
@@ -352,6 +354,8 @@ def getRes():  # function to obtain the screen resolution from the settings file
             elif key == "hsize":
                 h = int(val)
     return w, h
+
+
 
 
 def startTracking(root):  # starts tracking

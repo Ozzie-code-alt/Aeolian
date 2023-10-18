@@ -25,7 +25,7 @@ from threading import Lock
 from utils import CvFpsCalc
 from model import KeyPointClassifier
 from model import PointHistoryClassifier
-
+from tkinter import ttk
 
 # window = None
 
@@ -52,17 +52,17 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
     # x1 = y1 = x2 = y2 = 0
     
 
-    def run_tkinter(lock):
+    def run_tkinter():
         global newwindow
         newwindow = tk.Tk()
         newwindow.title("Aeolian")
-        newwindow.geometry("500x500")
+        newwindow.geometry("300x100")
+        newwindow.resizable(width=False, height=False)
         def button_click():
             # print("Button clicked!")
             main()
-
-        button = tk.Button(newwindow, text="Click Me!", command=button_click)
-        button.pack()
+        button = tk.Button(newwindow, text="Click Me!", command=button_click, background="red", foreground="white", font=("Helvetica", 12))
+        button.pack(expand=True, fill="both")
         newwindow.mainloop()
         return newwindow
         
@@ -70,8 +70,9 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
 
         
         ## runs tkinter independently from the program and separately 
-    lock = threading.Lock()
-    t1=threading.Thread(target=run_tkinter,args=(lock,))
+    # lock = threading.Lock()
+    # t1=threading.Thread(target=run_tkinter,args=(lock,))
+    t1 = threading.Thread(target=run_tkinter)
     t1.start()
 
             
@@ -154,7 +155,8 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
 
 
 
-   
+    newwindow.quit()
+    newwindow.deiconify()
     cap.release()
     cv2.destroyAllWindows()
     root.deiconify()
