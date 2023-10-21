@@ -61,7 +61,7 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
         def button_click():
             # print("Button clicked!")
             main()
-        button = tk.Button(newwindow, text="Click Me!", command=button_click, background="red", foreground="white", font=("Helvetica", 12))
+        button = tk.Button(newwindow, text="Hand Gesture", command=button_click, background="red", foreground="white", font=("Helvetica", 12))
         button.pack(expand=True, fill="both")
         newwindow.mainloop()
         return newwindow

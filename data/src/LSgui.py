@@ -89,7 +89,7 @@ def mainWin():
 
     howtouse = tk.Button(sidebar, text="More Info", fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, padx=50, cursor="hand2", command=lambda: howToUse(main, color), highlightthickness=0)
 
-    AeolianVoice = tk.Button(sidebar, text="Aeolian Voice",fg=color["t"], font=btnfont, bg=color["p"], borderwidth=3, padx=50, cursor="hand2",command=lambda: aeolian(main, color), highlightthickness=0)
+    AeolianVoice = tk.Button(sidebar, text="Aeolian Voice",fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, padx=50, cursor="hand2",command=lambda: aeolian(main, color), highlightthickness=0)
 
 
 
