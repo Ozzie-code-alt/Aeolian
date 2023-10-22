@@ -11,7 +11,7 @@ from pyglet import font
 from LStrack import start
 from time import ctime
 from LScalibrate import selectPoints
-from psutil import cpu_percent
+from psutil import cpu_percent, virtual_memory
 
 widget_state = False
 
@@ -87,7 +87,11 @@ def mainWin():
     
     cpu_title_label = tk.Label(main, text='CPU Usage: ', font='Arial 24 bold', fg='#FA5125')
 
+    ram_title_label = tk.Label(main, text='RAM Usage: ', font='Arial 24 bold', fg='#FA5125')
+
     cpu_Label = tk.Label(main, bg='#071C1E', fg='#FA5125', font='Arial 30 bold', width=20)
+
+    ram_Label = tk.Label(main, bg='#071C1E', fg='#FA5125', font='Arial 30 bold', width=20)
 
     start = tk.Button(sidebar, text="Think Vision", fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, cursor="hand2", highlightthickness=0, command=lambda: startTracking(root))
     
@@ -118,6 +122,8 @@ def mainWin():
             mainimglbl.grid()
             cpu_title_label.place_forget()
             cpu_Label.place_forget()
+            ram_title_label.place_forget()
+            ram_Label.place_forget()
             widget_state = False
           
         else:
@@ -125,18 +131,38 @@ def mainWin():
             title_program.place(x=110, y=20)     
             cpu_title_label.place(x=20, y=155)
             cpu_Label.place(x=230, y=150)
+            ram_title_label.place(x=20,y=255)
+            ram_Label.place(x=230, y=250)
             widget_state = True
-    
 
+#CPU Info 
     def show_cpu_info():
         cpu_use = cpu_percent(interval=1)
         cpu_Label.config(text= '{}%'.format(cpu_use))
         cpu_Label.after(10000,show_cpu_info)
 
 
+# Ram info 
+    def convert_bytes_to_gb(byte):
+        one_gigabyte = 1073741824
+        giga = byte/one_gigabyte
+        giga = '{0:.1f}'.format(giga)
+        return giga
+    
+    def show_ram_info():
+        ram_usage = virtual_memory()
+        ram_usage = dict(ram_usage._asdict())
+        for key in ram_usage:
+            if key!='percent':
+                ram_usage[key]=convert_bytes_to_gb(ram_usage[key])
+        ram_Label.config(text='{} GB / {} GB({} %)'.format(ram_usage['used'], ram_usage["total"], ram_usage["percent"]))
+        ram_Label.after(10000, show_ram_info)
+
+
 
     if __name__ =='__main__':
         show_cpu_info()
+        show_ram_info()
 
 
     # puts widgets on screen
