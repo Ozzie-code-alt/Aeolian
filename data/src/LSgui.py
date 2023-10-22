@@ -11,7 +11,9 @@ from pyglet import font
 from LStrack import start
 from time import ctime
 from LScalibrate import selectPoints
+from psutil import cpu_percent
 
+widget_state = False
 
 def mainWin():
     font.add_file("data\src\RobotoMono-Light.ttf")
@@ -65,7 +67,7 @@ def mainWin():
     resized = spanimg.resize((360, 72), Image.ANTIALIAS)
     resizedspan = ImageTk.PhotoImage(resized)
 
-    # creates frames and configures layout for each
+    # creates frames and configures layout for each frames or containes
     sidebar = tk.Frame(root, bg = color["p"])
     main = tk.Frame(root, bg=color["s"])
     root.rowconfigure(0, weight=1)
@@ -81,6 +83,12 @@ def mainWin():
 
     mainimglbl = tk.Label(main, image=mainimage, highlightthickness=0, borderwidth=0)
 
+    title_program = tk.Label(main, text='PC PERFORMANCE MANAGER', font='Arial 30 bold', fg='#14747F')
+    
+    cpu_title_label = tk.Label(main, text='CPU Usage: ', font='Arial 24 bold', fg='#FA5125')
+
+    cpu_Label = tk.Label(main, bg='#071C1E', fg='#FA5125', font='Arial 30 bold', width=20)
+
     start = tk.Button(sidebar, text="Think Vision", fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, cursor="hand2", highlightthickness=0, command=lambda: startTracking(root))
     
     calibration = tk.Button(sidebar, text="Calibrate", fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, padx=50, cursor="hand2", command=lambda: startCalibration(main, color, mainimglbl), highlightthickness=0)
@@ -91,6 +99,8 @@ def mainWin():
 
     AeolianVoice = tk.Button(sidebar, text="Aeolian Voice",fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, padx=50, cursor="hand2",command=lambda: aeolian(main, color), highlightthickness=0)
 
+    Toggle_btn = tk.Button(sidebar, text="Performance Checker", fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, padx=50, cursor="hand2",command=lambda: toggle_widget(), highlightthickness=0)
+
 
 
 
@@ -100,10 +110,34 @@ def mainWin():
     credit = tk.Button(bottomleft, text="GitHub: @Ozzie-Code-Alt", font = ("Roboto Mono Light", 7), bg=color["p"], fg=color["c"], highlightthickness=0, borderwidth=0, activeforeground=color["t"], activebackground=color["p"], cursor="hand2", command=lambda: webbrowser.open("https://github.com/Ozzie-code-alt"))
     version = tk.Label(bottomleft, text=version, font=("Roboto Mono Light", 7), bg=color["p"], fg=color["c"], highlightthickness=0, borderwidth=0)
 
-    
+    def toggle_widget():
+        global widget_state
+
+        if widget_state:
+            title_program.place_forget()
+            mainimglbl.grid()
+            cpu_title_label.place_forget()
+            cpu_Label.place_forget()
+            widget_state = False
+          
+        else:
+            mainimglbl.grid_forget()
+            title_program.place(x=110, y=20)     
+            cpu_title_label.place(x=20, y=155)
+            cpu_Label.place(x=230, y=150)
+            widget_state = True
     
 
-    # < creates widgets
+    def show_cpu_info():
+        cpu_use = cpu_percent(interval=1)
+        cpu_Label.config(text= '{}%'.format(cpu_use))
+        cpu_Label.after(10000,show_cpu_info)
+
+
+
+    if __name__ =='__main__':
+        show_cpu_info()
+
 
     # puts widgets on screen
     span.grid(row=0, column=0, padx=20, pady=20)
@@ -112,11 +146,16 @@ def mainWin():
     settings.grid(row=3, column=0, sticky="ew", pady=30)
     howtouse.grid(row=4, column=0, sticky="ew", pady=10)
     AeolianVoice.grid(row=5,column=0,sticky ="ew",pady=10 )
+    Toggle_btn.grid(row=6,column=0, sticky ="ew",pady=10 )
     credit.grid(row=5, column=0, sticky="sw", padx=(3,0))
     version.grid(row=5, column=0, sticky="se", padx=(375,0))
     bottomleft.grid(row=1, column=0, sticky="nsew")
     bottomright.grid(row=1, column=1, sticky="nsew")
-    mainimglbl.grid()
+    
+
+
+    
+
 
     #  puts frames on screen
     main.grid(row=0, column=1, sticky="nsew")
@@ -191,6 +230,7 @@ def validateFiles():
 def viewSettings(main, color, config, default):
     for widget in main.winfo_children():
         widget.grid_forget()
+
     mainContent = tk.Frame(main, bg=color["s"])  # create frame
 
     #  creates tickbox vars
@@ -320,6 +360,7 @@ def showRes(wlbl, wtxt, hlbl, htxt, save):  # places resolution related widgets 
 def clearMain(frame):  # removes all widgets from the frame
     for widget in frame.winfo_children():
         widget.grid_forget()
+        widget.place_forget()
 
 
 def startCalibration(main, color, lbl):
