@@ -12,7 +12,7 @@ import copy
 import argparse
 import itertools
 import cv2 as cv
-
+import time
 
 from collections import Counter
 from collections import deque
@@ -429,7 +429,8 @@ def perform_action(gesture):
         pyautogui.scroll(-100)
         pyautogui.keyUp("ctrl")
     elif gesture == "ok":
-        keyboard.press("q")
+        keyboard.press_and_release('right')
+        time.sleep(1)
 
 
 
