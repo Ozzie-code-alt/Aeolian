@@ -13,7 +13,7 @@ from time import ctime
 from LScalibrate import selectPoints
 from psutil import cpu_percent, virtual_memory
 
-widget_state = False
+widget_state = True
 
 def mainWin():
     font.add_file("data\src\RobotoMono-Light.ttf")
@@ -79,7 +79,7 @@ def mainWin():
 
     span = tk.Button(sidebar, image=resizedspan, borderwidth=0, cursor="hand2", highlightthickness=0, activebackground=color["p"], command=lambda: homepage(main, mainimglbl))  # label used for image
 
-    # creates widgets >
+    # create widgets >
 
     mainimglbl = tk.Label(main, image=mainimage, highlightthickness=0, borderwidth=0)
 
@@ -93,6 +93,10 @@ def mainWin():
 
     ram_Label = tk.Label(main, bg='#071C1E', fg='#FA5125', font='Arial 30 bold', width=20)
 
+
+
+
+
     start = tk.Button(sidebar, text="Think Vision", fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, cursor="hand2", highlightthickness=0, command=lambda: startTracking(root))
     
     calibration = tk.Button(sidebar, text="Calibrate", fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, padx=50, cursor="hand2", command=lambda: startCalibration(main, color, mainimglbl), highlightthickness=0)
@@ -103,7 +107,7 @@ def mainWin():
 
     AeolianVoice = tk.Button(sidebar, text="Aeolian Voice",fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, padx=50, cursor="hand2",command=lambda: aeolian(main, color), highlightthickness=0)
 
-    Toggle_btn = tk.Button(sidebar, text="Performance Checker", fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, padx=50, cursor="hand2",command=lambda: toggle_widget(), highlightthickness=0)
+    Toggle_btn = tk.Button(sidebar, text="Performance Checker", fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, padx=50, cursor="hand2",command=lambda: toggle_widget(main, color), highlightthickness=0)
 
 
 
@@ -114,12 +118,14 @@ def mainWin():
     credit = tk.Button(bottomleft, text="GitHub: @Ozzie-Code-Alt", font = ("Roboto Mono Light", 7), bg=color["p"], fg=color["c"], highlightthickness=0, borderwidth=0, activeforeground=color["t"], activebackground=color["p"], cursor="hand2", command=lambda: webbrowser.open("https://github.com/Ozzie-code-alt"))
     version = tk.Label(bottomleft, text=version, font=("Roboto Mono Light", 7), bg=color["p"], fg=color["c"], highlightthickness=0, borderwidth=0)
 
-    def toggle_widget():
+    def toggle_widget(main, color):
         global widget_state
+        for widget in main.winfo_children():
+            widget.grid_forget()
 
         if widget_state:
-            title_program.place_forget()
             mainimglbl.grid()
+            title_program.place_forget()
             cpu_title_label.place_forget()
             cpu_Label.place_forget()
             ram_title_label.place_forget()
@@ -134,6 +140,7 @@ def mainWin():
             ram_title_label.place(x=20,y=255)
             ram_Label.place(x=230, y=250)
             widget_state = True
+
 
 #CPU Info 
     def show_cpu_info():
@@ -256,6 +263,7 @@ def validateFiles():
 def viewSettings(main, color, config, default):
     for widget in main.winfo_children():
         widget.grid_forget()
+        widget.place_forget()
 
     mainContent = tk.Frame(main, bg=color["s"])  # create frame
 
@@ -308,7 +316,6 @@ def viewSettings(main, color, config, default):
     setDefault = tk.Button(mainContent, image=imgscaled2, bg=color["s"], borderwidth=0, cursor="hand2", activebackground=color["s"], width=90, height=35, command=lambda: onDefault(save, config, default, themeChk, startupChk, minTrayChk, wtxt, htxt), highlightthickness=0)  # sets default values for widgets and saves
     setDefault.image = imgscaled2
     setDefault.grid(row=5, column=0, sticky="w", ipadx=20, ipady=10, padx=(70, 0), pady=(150, 0))
-
 
 
 
@@ -472,6 +479,7 @@ def howToUse(main, color):
     global websitebtn, frames, frame_index, frame_duration, githubbtn,frames1,frame_index1,frame_duration1
     for widget in main.winfo_children():
         widget.grid_forget()
+        widget.place_forget()
 
     # creates github btn
     img1 = Image.open("data\images\linkedin.gif")
