@@ -396,6 +396,8 @@ def main():
                     perform_action("bigC")
                 elif hand_gesture == 3:
                     perform_action("ok")
+                elif hand_gesture == 0:
+                    perform_action("open")
 
 
         else:
@@ -428,9 +430,11 @@ def perform_action(gesture):
         pyautogui.keyDown("ctrl")
         pyautogui.scroll(-100)
         pyautogui.keyUp("ctrl")
+    elif gesture == "open":
+        keyboard.press_and_release('right')
+        time.sleep(1)
     elif gesture == "ok":
         pyautogui.keyDown('q')
-        # time.sleep(1)
 
 
 
