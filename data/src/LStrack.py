@@ -317,7 +317,7 @@ def main():
         # Process Key (ESC: end) #################################################
         key = cv.waitKey(1)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if key == ord('q'):
             break
 
         number, mode = select_mode(key, mode)
@@ -429,8 +429,8 @@ def perform_action(gesture):
         pyautogui.scroll(-100)
         pyautogui.keyUp("ctrl")
     elif gesture == "ok":
-        keyboard.press_and_release('right')
-        time.sleep(1)
+        pyautogui.keyDown('q')
+        # time.sleep(1)
 
 
 
