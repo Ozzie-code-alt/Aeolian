@@ -398,6 +398,10 @@ def main():
                     perform_action("ok")
                 elif hand_gesture == 0:
                     perform_action("open")
+                elif hand_gesture ==6:
+                    perform_action('right')
+                elif hand_gesture == 7:
+                    perform_action('left')
 
 
         else:
@@ -431,10 +435,15 @@ def perform_action(gesture):
         pyautogui.scroll(-100)
         pyautogui.keyUp("ctrl")
     elif gesture == "open":
-        keyboard.press_and_release('right')
-        time.sleep(1)
+        pass
     elif gesture == "ok":
         pyautogui.keyDown('q')
+    elif gesture == "right":
+        keyboard.press_and_release('right')
+        time.sleep(1)
+    elif gesture == 'left':
+        keyboard.press_and_release('left')
+        time.sleep(1)
 
 
 
