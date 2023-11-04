@@ -3,7 +3,7 @@ import tkinter as tk
 import speech_recognition as sr
 import LSsharedmodules
 import webbrowser  # used to open webpage
-
+import threading
 
 from PIL import Image, ImageTk
 from platform import system # used to identify os
@@ -550,8 +550,12 @@ def aeolian(main, color):
     AolianLabel.grid(row=1, column=2,)
     aeolianContent.grid(row=0, column=0, sticky="nsew")
 
+engine2 = tts.init()
+
 def ask1(AolianLabel):
-    print("ASk")
+    engine2.say("How Can I Assist You ? ")
+    engine2.runAndWait()
+   
     voice_data = recordAudio()
     print(voice_data)
     AolianLabel.config(fg="red")
@@ -569,34 +573,56 @@ def recordAudio(ask = False):
             voice_data = r.recognize_google(audio)
 
         except sr.UnknownValueError:
+            engine2.say('Sorry, i didnt get that')
+            engine2.runAndWait()
             print("Sorry i didnt get that")
         except sr.RequestError:
+            engine2.say('Sorry, Service is down')
+            engine2.runAndWait()
             print("Sorry Service is down")
         return voice_data
 
 def respond(voice_data, AolianLabel):
+
     if('what is your name') in voice_data:
         AolianLabel.config(fg ="green")
+        engine2.say('My name is Aeolian')
+        engine2.runAndWait()
         print('My name is Aeolian')
+        
     if 'what time is it' in voice_data:
         AolianLabel.config(fg ="green")
+        engine2.say(f'Date today is {ctime()}')
+        engine2.runAndWait()
         print(ctime())
         
     if 'search' in voice_data:
-        AolianLabel.config(fg ="green")
+        AolianLabel.config(fg="green")
+        engine2.say('What do you want to search for?')
+        engine2.runAndWait()
         search = recordAudio('What do you want to search for')
-        url ='https://google.com/search?q=' + search
-        webbrowser.get().open(url)
-        print('Here is what i found ' + search)
+        url = 'https://www.google.com/search?q=' + search  # Fixed URL
+        webbrowser.open(url)
+        engine2.say(f'This is what I found for {search}')
+        engine2.runAndWait()  # Added runAndWait() for proper audio playback
+        print(f'Here is what I found for "{search}"')
+
 
     if 'find a location' in voice_data:
         AolianLabel.config(fg ="green")
         location = recordAudio('what location do you want to search for ?')
         url ='https://google.nl/maps/place/' + location + '/&amp;'
         webbrowser.get().open(url)
+        engine2.say(f'Here is the location of {location}')
+        engine2.runAndWait()
         print('here is the location of ' + location)
     if 'stop' in voice_data:
+        engine2.say('Thank you, Let me know if you need anything')
+        engine2.runAndWait()
         exit()
+
+delayCode = threading.Timer(1, respond)
+delayCode.start()
 
 
 mainWin()
