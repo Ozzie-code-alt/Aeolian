@@ -15,7 +15,14 @@ from psutil import cpu_percent, virtual_memory
 
 widget_state = True
 
+def update_MainFrame():
+    global mainFrameIndex
+    mainFrameIndex = (mainFrameIndex + 1) % len(mainFrameContainer)
+    mainimglbl.config(image=mainFrameContainer[mainFrameIndex])
+    mainimglbl.after(mainFrameDuration, update_MainFrame)
+
 def mainWin():
+    global mainFrameIndex,mainFrameDuration, mainFrameContainer
     font.add_file("data\src\RobotoMono-Light.ttf")
     version = "v1.5"
     config, default, startup, minimizeToTray = validateFiles()  # obtains values from files
@@ -41,16 +48,26 @@ def mainWin():
     
     global mainimage
     global mainimglbl
+
     # dark theme color scheme
     color = {
-        "p": "#111111",
-        "s": "#232323",
+        "p": "#15052A",
+        "s": "#15052A",
         "t": "#adadad",
         "c": "#202020"
         }
     imglocation = "data/images/spandark.png"
-    mainimg = Image.open("data/images/maindark.png")
-    mainimage = ImageTk.PhotoImage(mainimg)
+    mainimg = Image.open("data/images/MainGif.gif")
+    mainFrameContainer = []
+    try:
+        while True:
+            frame = mainimg.copy().resize((876, 715), Image.ANTIALIAS)
+            mainFrameContainer.append(ImageTk.PhotoImage(frame))
+            mainimg.seek(len(mainFrameContainer))
+    except EOFError:
+        pass
+    # mainimage = ImageTk.PhotoImage(mainimg)
+
 
     # light theme color scheme
     if theme == "light":
@@ -81,7 +98,11 @@ def mainWin():
 
     # create widgets >
 
-    mainimglbl = tk.Label(main, image=mainimage, highlightthickness=0, borderwidth=0)
+    mainimglbl = tk.Label(main, highlightthickness=0, borderwidth=0)
+    mainFrameIndex = 0
+    mainFrameDuration = 100
+    update_MainFrame()
+
 
     title_program = tk.Label(main, text='PC PERFORMANCE MANAGER', font='Arial 30 bold', fg='#14747F')
     
@@ -117,6 +138,9 @@ def mainWin():
     bottomright= tk.Frame(root, bg=color["s"])
     credit = tk.Button(bottomleft, text="GitHub: @Ozzie-Code-Alt", font = ("Roboto Mono Light", 7), bg=color["p"], fg=color["c"], highlightthickness=0, borderwidth=0, activeforeground=color["t"], activebackground=color["p"], cursor="hand2", command=lambda: webbrowser.open("https://github.com/Ozzie-code-alt"))
     version = tk.Label(bottomleft, text=version, font=("Roboto Mono Light", 7), bg=color["p"], fg=color["c"], highlightthickness=0, borderwidth=0)
+    
+
+
 
     def toggle_widget(main, color):
         global widget_state
@@ -147,7 +171,7 @@ def mainWin():
         cpu_use = cpu_percent(interval=1)
         cpu_Label.config(text= '{}%'.format(cpu_use))
         cpu_Label.after(10000,show_cpu_info)
-
+        
 
 # Ram info 
     def convert_bytes_to_gb(byte):
@@ -499,6 +523,8 @@ def howToUse(main, color):
     frame_index1 = 0
     frame_duration1 = 100
     update_frame1()
+
+
     # img = Image.open("data\images\github.png")
     # resized = img.resize((256, 256), Image.ANTIALIAS)
     # image = ImageTk.PhotoImage(resized)
@@ -542,6 +568,7 @@ def howToUse(main, color):
 def aeolian(main, color):
     for widget in main.winfo_children():
         widget.grid_forget()
+        widget.place_forget()
 
     aeolianContent = tk.Frame(main, bg=color["s"])  # create frame
     voiceBtn = tk.Button(aeolianContent, text="Aeolian Voice Assistant", font=('Arial', 18), bg=color["s"], fg=color["t"], relief="groove", borderwidth=2, highlightthickness=1, cursor="hand2",command = lambda:ask1(AolianLabel) )
@@ -643,11 +670,6 @@ def respond(voice_data, AolianLabel):
         engine2.runAndWait()
         openNewTabInOperaGX()
 
-    if 'start aeolian' in voice_data:
-        AolianLabel.config(fg="green")
-        engine2.say('Starting Aeolian')
-        engine2.runAndWait()
-        startTracking(root=)
 
 
     if 'stop' in voice_data:
