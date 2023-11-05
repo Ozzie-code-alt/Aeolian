@@ -582,6 +582,26 @@ def recordAudio(ask = False):
             print("Sorry Service is down")
         return voice_data
 
+
+
+
+
+
+def openNewTabInOperaGX():
+    try:
+        # Specify the path to the Opera GX executable
+        opera_gx_path = r"C:\Users\Justin Santos\AppData\Local\Programs\Opera GX\launcher.exe"  # Adjust the path as needed
+
+        # Use the webbrowser module to open a new tab in Opera GX
+        webbrowser.register('opera', None, webbrowser.BackgroundBrowser(opera_gx_path))
+        webbrowser.get('opera').open('google.com', new=2)
+
+        print('Opened a new tab in Opera GX')
+    except Exception as e:
+        print(f'Error opening a new tab in Opera GX: {str(e)}')
+
+
+
 def respond(voice_data, AolianLabel):
 
     if('what is your name') in voice_data:
@@ -616,6 +636,20 @@ def respond(voice_data, AolianLabel):
         engine2.say(f'Here is the location of {location}')
         engine2.runAndWait()
         print('here is the location of ' + location)
+
+    if 'open a new tab' in voice_data:
+        AolianLabel.config(fg="green")
+        engine2.say('Opening a new tab in your web browser')
+        engine2.runAndWait()
+        openNewTabInOperaGX()
+
+    if 'start aeolian' in voice_data:
+        AolianLabel.config(fg="green")
+        engine2.say('Starting Aeolian')
+        engine2.runAndWait()
+        startTracking(root=)
+
+
     if 'stop' in voice_data:
         engine2.say('Thank you, Let me know if you need anything')
         engine2.runAndWait()

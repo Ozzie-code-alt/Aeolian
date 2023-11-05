@@ -14,6 +14,8 @@ import itertools
 import cv2 as cv
 import time
 
+import webbrowser
+
 from collections import Counter
 from collections import deque
 from cv2 import warpPerspective  # used in warping image
@@ -418,6 +420,21 @@ def main():
     cv2.destroyWindow('Frame2')
     close_Tkinter()
 
+
+
+def openNewTabInOperaGX():
+    try:
+        # Specify the path to the Opera GX executable
+        opera_gx_path = r"C:\Users\Justin Santos\AppData\Local\Programs\Opera GX\launcher.exe"  # Adjust the path as needed
+
+        # Use the webbrowser module to open a new tab in Opera GX
+        webbrowser.register('opera', None, webbrowser.BackgroundBrowser(opera_gx_path))
+        webbrowser.get('opera').open('google.com', new=2)
+
+        print('Opened a new tab in Opera GX')
+    except Exception as e:
+        print(f'Error opening a new tab in Opera GX: {str(e)}')
+
     
 def perform_action(gesture):
     if gesture == "pointerUp":
@@ -435,7 +452,8 @@ def perform_action(gesture):
         pyautogui.scroll(-100)
         pyautogui.keyUp("ctrl")
     elif gesture == "open":
-        pass
+        openNewTabInOperaGX()
+        time(1)
     elif gesture == "ok":
         pyautogui.keyDown('q')
     elif gesture == "right":
