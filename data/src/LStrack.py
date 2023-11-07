@@ -404,6 +404,8 @@ def main():
                     perform_action('right')
                 elif hand_gesture == 7:
                     perform_action('left')
+                elif hand_gesture ==8:
+                    perform_action('peace')
 
 
         else:
@@ -452,17 +454,20 @@ def perform_action(gesture):
         pyautogui.scroll(-100)
         pyautogui.keyUp("ctrl")
     elif gesture == "open":
-        openNewTabInOperaGX()
-        time(1)
+        pass
     elif gesture == "ok":
         pyautogui.keyDown('q')
+
     elif gesture == "right":
         keyboard.press_and_release('right')
         time.sleep(1)
     elif gesture == 'left':
         keyboard.press_and_release('left')
         time.sleep(1)
-
+    elif gesture == 'peace':
+        openNewTabInOperaGX()
+        time.sleep(1)
+     
 
 
 def select_mode(key, mode):

@@ -4,7 +4,10 @@ import speech_recognition as sr
 import LSsharedmodules
 import webbrowser  # used to open webpage
 import threading
+from ttkthemes import ThemedStyle
 
+
+from tkinter import ttk
 from PIL import Image, ImageTk
 from platform import system # used to identify os
 from pyglet import font
@@ -565,7 +568,16 @@ def howToUse(main, color):
     websitebtn.grid(column=1, row=0, padx=(120, 0), ipadx=5, ipady=5)
 
 
+
 def aeolian(main, color):
+    def on_enter(event):
+        voiceBtn.config(foreground='red')
+        voiceBtn.config(text="Use Mic For Voice")
+
+    def on_leave(event):
+        voiceBtn.config(foreground='white')
+        voiceBtn.config(text="Aeolian Voice Assistant")
+
     for widget in main.winfo_children():
         widget.grid_forget()
         widget.place_forget()
@@ -576,6 +588,8 @@ def aeolian(main, color):
     voiceBtn.grid(row=0, column=0, sticky="w", padx=(0, 20), pady=25, ipadx=20, ipady=10)
     AolianLabel.grid(row=1, column=2,)
     aeolianContent.grid(row=0, column=0, sticky="nsew")
+    voiceBtn.bind("<Enter>", on_enter)
+    voiceBtn.bind("<Leave>", on_leave)
 
 engine2 = tts.init()
 
