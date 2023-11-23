@@ -30,8 +30,20 @@ from model import PointHistoryClassifier
 from tkinter import ttk
 
 # window = None
+def save_video_source(source):
+    with open("video_source.txt", "w") as file:
+        file.write(str(source))
 
+def load_video_source():
+    try:
+        with open("video_source.txt", "r") as file:
+            return int(file.read().strip())
+    except (FileNotFoundError, ValueError):
+        return 0  # Default to 0 if file not found or if it's invalid
+    
 def start(root, pointsstr, maskparamsmalformed, width, height):
+        # Initialize camera
+
     # gets literal vals from str
     points = literal_eval(pointsstr)
     maskparamsstr = ''.join([letter for letter in maskparamsmalformed if letter not in("array()")])
@@ -40,8 +52,10 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
     lower, upper = np.array(maskparams[0]), np.array(maskparams[1])
     
     root.withdraw()
-
-    cap = cv2.VideoCapture(1)
+    global cap
+    global video_source
+    video_source = load_video_source()  # Load video source from file
+    cap = cv2.VideoCapture(video_source)
     cap.set(15, -5) #  may have to change the 2nd arg. Only supported for some cameras. Testing with droidcam therefore cannot use this myself
     mat = warpImage(cap, points)  # creates warped image 
     hold = []  # list of points to detect when held
@@ -52,8 +66,6 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
     # drawing_utils = mp.solutions.drawing_utils
 #Hands Line Var
     # x1 = y1 = x2 = y2 = 0
-    
-
     def run_tkinter():
         global newwindow
         newwindow = tk.Tk()
@@ -63,8 +75,15 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
         def button_click():
             # print("Button clicked!")
             main()
-        button = tk.Button(newwindow, text="Hand Gesture", command=button_click, background="red", foreground="white", font=("Helvetica", 12))
+        def switch_camera():
+            global video_source
+            video_source = (video_source + 1) % 3  # Cycle through 0, 1, 2
+            save_video_source(video_source)  # Save the new video source
+
+        button = tk.Button(newwindow, text="Hand Gesture", command=button_click, background="blue", foreground="white", font=("Helvetica", 12))
         button.pack(expand=True, fill="both")
+        btn_switch = ttk.Button(newwindow, text="Switch Camera - requires restart", command=switch_camera)
+        btn_switch.pack()
         newwindow.mainloop()
         return newwindow
         
@@ -156,7 +175,7 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
 
 
 
-
+ 
     newwindow.quit()
     newwindow.deiconify()
     cap.release()
@@ -234,7 +253,7 @@ def draw(pos, w, h, previous):
 def get_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--device", type=int, default=0)
+    parser.add_argument("--device", type=int, default=2)
     parser.add_argument("--width", help='cap width', type=int, default=960)
     parser.add_argument("--height", help='cap height', type=int, default=540)
 

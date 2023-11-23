@@ -4,7 +4,7 @@ import speech_recognition as sr
 import LSsharedmodules
 import webbrowser  # used to open webpage
 import threading
-from ttkthemes import ThemedStyle
+
 
 
 from tkinter import ttk
@@ -570,14 +570,6 @@ def howToUse(main, color):
 
 
 def aeolian(main, color):
-    def on_enter(event):
-        voiceBtn.config(foreground='red')
-        voiceBtn.config(text="Use Mic For Voice")
-
-    def on_leave(event):
-        voiceBtn.config(foreground='white')
-        voiceBtn.config(text="Aeolian Voice Assistant")
-
     for widget in main.winfo_children():
         widget.grid_forget()
         widget.place_forget()
@@ -588,8 +580,7 @@ def aeolian(main, color):
     voiceBtn.grid(row=0, column=0, sticky="w", padx=(0, 20), pady=25, ipadx=20, ipady=10)
     AolianLabel.grid(row=1, column=2,)
     aeolianContent.grid(row=0, column=0, sticky="nsew")
-    voiceBtn.bind("<Enter>", on_enter)
-    voiceBtn.bind("<Leave>", on_leave)
+
 
 engine2 = tts.init()
 
@@ -599,6 +590,10 @@ def ask1(AolianLabel):
    
     voice_data = recordAudio()
     print(voice_data)
+
+
+
+    
     AolianLabel.config(fg="red")
     respond(voice_data, AolianLabel)
 
@@ -644,7 +639,6 @@ def openNewTabInOperaGX():
 
 
 def respond(voice_data, AolianLabel):
-
     if('what is your name') in voice_data:
         AolianLabel.config(fg ="green")
         engine2.say('My name is Aeolian')
