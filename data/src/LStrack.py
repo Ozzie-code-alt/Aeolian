@@ -416,7 +416,7 @@ def main():
                 elif hand_gesture == 5:
                     perform_action("bigC")
                 elif hand_gesture == 3:
-                    perform_action("ok")
+                    pass
                 elif hand_gesture == 0:
                     perform_action("open")
                 elif hand_gesture ==6:
@@ -478,14 +478,17 @@ def perform_action(gesture):
         pyautogui.keyDown('q')
 
     elif gesture == "right":
-        keyboard.press_and_release('right')
-        time.sleep(1)
+        pass
+        # keyboard.press_and_release('right')
+        # time.sleep(1)
     elif gesture == 'left':
-        keyboard.press_and_release('left')
-        time.sleep(1)
+        pass
+        # keyboard.press_and_release('left')
+        # time.sleep(1)
     elif gesture == 'peace':
-        openNewTabInOperaGX()
-        time.sleep(1)
+        pass
+        # openNewTabInOperaGX()
+        # time.sleep(1)
      
 
 
