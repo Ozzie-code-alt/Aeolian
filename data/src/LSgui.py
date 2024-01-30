@@ -5,8 +5,6 @@ import LSsharedmodules
 import webbrowser  # used to open webpage
 import threading
 
-
-
 from tkinter import ttk
 from PIL import Image, ImageTk
 from platform import system # used to identify os
