@@ -1,17 +1,31 @@
-import tkinter as tk
-from LScalibrate import selectPoints
-from LStrack import start
-from PIL import Image, ImageTk
-import webbrowser  # used to open webpage
-from platform import system # used to identify os
-import LSsharedmodules
-from pyglet import font
-from time import ctime
-import speech_recognition as sr
 import pyttsx3 as tts
+import tkinter as tk
+import speech_recognition as sr
+import LSsharedmodules
+import webbrowser  # used to open webpage
+import threading
 
+
+
+from tkinter import ttk
+from PIL import Image, ImageTk
+from platform import system # used to identify os
+from pyglet import font
+from LStrack import start
+from time import ctime
+from LScalibrate import selectPoints
+from psutil import cpu_percent, virtual_memory
+
+widget_state = True
+
+def update_MainFrame():
+    global mainFrameIndex
+    mainFrameIndex = (mainFrameIndex + 1) % len(mainFrameContainer)
+    mainimglbl.config(image=mainFrameContainer[mainFrameIndex])
+    mainimglbl.after(mainFrameDuration, update_MainFrame)
 
 def mainWin():
+    global mainFrameIndex,mainFrameDuration, mainFrameContainer
     font.add_file("data\src\RobotoMono-Light.ttf")
     version = "v1.5"
     config, default, startup, minimizeToTray = validateFiles()  # obtains values from files
@@ -37,16 +51,26 @@ def mainWin():
     
     global mainimage
     global mainimglbl
+
     # dark theme color scheme
     color = {
-        "p": "#111111",
-        "s": "#232323",
+        "p": "#15052A",
+        "s": "#15052A",
         "t": "#adadad",
         "c": "#202020"
         }
     imglocation = "data/images/spandark.png"
-    mainimg = Image.open("data/images/maindark.png")
-    mainimage = ImageTk.PhotoImage(mainimg)
+    mainimg = Image.open("data/images/MainGif.gif")
+    mainFrameContainer = []
+    try:
+        while True:
+            frame = mainimg.copy().resize((876, 715), Image.ANTIALIAS)
+            mainFrameContainer.append(ImageTk.PhotoImage(frame))
+            mainimg.seek(len(mainFrameContainer))
+    except EOFError:
+        pass
+    # mainimage = ImageTk.PhotoImage(mainimg)
+
 
     # light theme color scheme
     if theme == "light":
@@ -63,7 +87,7 @@ def mainWin():
     resized = spanimg.resize((360, 72), Image.ANTIALIAS)
     resizedspan = ImageTk.PhotoImage(resized)
 
-    # creates frames and configures layout for each
+    # creates frames and configures layout for each frames or containes
     sidebar = tk.Frame(root, bg = color["p"])
     main = tk.Frame(root, bg=color["s"])
     root.rowconfigure(0, weight=1)
@@ -75,9 +99,27 @@ def mainWin():
 
     span = tk.Button(sidebar, image=resizedspan, borderwidth=0, cursor="hand2", highlightthickness=0, activebackground=color["p"], command=lambda: homepage(main, mainimglbl))  # label used for image
 
-    # creates widgets >
+    # create widgets >
 
-    mainimglbl = tk.Label(main, image=mainimage, highlightthickness=0, borderwidth=0)
+    mainimglbl = tk.Label(main, highlightthickness=0, borderwidth=0)
+    mainFrameIndex = 0
+    mainFrameDuration = 100
+    update_MainFrame()
+
+
+    title_program = tk.Label(main, text='PC PERFORMANCE MANAGER', font='Arial 30 bold', fg='#14747F')
+    
+    cpu_title_label = tk.Label(main, text='CPU Usage: ', font='Arial 24 bold', fg='#FA5125')
+
+    ram_title_label = tk.Label(main, text='RAM Usage: ', font='Arial 24 bold', fg='#FA5125')
+
+    cpu_Label = tk.Label(main, bg='#071C1E', fg='#FA5125', font='Arial 30 bold', width=20)
+
+    ram_Label = tk.Label(main, bg='#071C1E', fg='#FA5125', font='Arial 30 bold', width=20)
+
+
+
+
 
     start = tk.Button(sidebar, text="Think Vision", fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, cursor="hand2", highlightthickness=0, command=lambda: startTracking(root))
     
@@ -87,7 +129,9 @@ def mainWin():
 
     howtouse = tk.Button(sidebar, text="More Info", fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, padx=50, cursor="hand2", command=lambda: howToUse(main, color), highlightthickness=0)
 
-    AeolianVoice = tk.Button(sidebar, text="Aeolian Voice",fg=color["t"], font=btnfont, bg=color["p"], borderwidth=3, padx=50, cursor="hand2",command=lambda: aeolian(main, color), highlightthickness=0)
+    AeolianVoice = tk.Button(sidebar, text="Aeolian Voice",fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, padx=50, cursor="hand2",command=lambda: aeolian(main, color), highlightthickness=0)
+
+    Toggle_btn = tk.Button(sidebar, text="Performance Checker", fg=color["t"], font=btnfont, bg=color["p"], borderwidth=0, padx=50, cursor="hand2",command=lambda: toggle_widget(main, color), highlightthickness=0)
 
 
 
@@ -97,11 +141,63 @@ def mainWin():
     bottomright= tk.Frame(root, bg=color["s"])
     credit = tk.Button(bottomleft, text="GitHub: @Ozzie-Code-Alt", font = ("Roboto Mono Light", 7), bg=color["p"], fg=color["c"], highlightthickness=0, borderwidth=0, activeforeground=color["t"], activebackground=color["p"], cursor="hand2", command=lambda: webbrowser.open("https://github.com/Ozzie-code-alt"))
     version = tk.Label(bottomleft, text=version, font=("Roboto Mono Light", 7), bg=color["p"], fg=color["c"], highlightthickness=0, borderwidth=0)
-
-    
     
 
-    # < creates widgets
+
+
+    def toggle_widget(main, color):
+        global widget_state
+        for widget in main.winfo_children():
+            widget.grid_forget()
+
+        if widget_state:
+            mainimglbl.grid()
+            title_program.place_forget()
+            cpu_title_label.place_forget()
+            cpu_Label.place_forget()
+            ram_title_label.place_forget()
+            ram_Label.place_forget()
+            widget_state = False
+          
+        else:
+            mainimglbl.grid_forget()
+            title_program.place(x=110, y=20)     
+            cpu_title_label.place(x=20, y=155)
+            cpu_Label.place(x=230, y=150)
+            ram_title_label.place(x=20,y=255)
+            ram_Label.place(x=230, y=250)
+            widget_state = True
+
+
+#CPU Info 
+    def show_cpu_info():
+        cpu_use = cpu_percent(interval=1)
+        cpu_Label.config(text= '{}%'.format(cpu_use))
+        cpu_Label.after(10000,show_cpu_info)
+        
+
+# Ram info 
+    def convert_bytes_to_gb(byte):
+        one_gigabyte = 1073741824
+        giga = byte/one_gigabyte
+        giga = '{0:.1f}'.format(giga)
+        return giga
+    
+    def show_ram_info():
+        ram_usage = virtual_memory()
+        ram_usage = dict(ram_usage._asdict())
+        for key in ram_usage:
+            if key!='percent':
+                ram_usage[key]=convert_bytes_to_gb(ram_usage[key])
+        ram_Label.config(text='{} GB / {} GB({} %)'.format(ram_usage['used'], ram_usage["total"], ram_usage["percent"]))
+        ram_Label.after(10000, show_ram_info)
+
+
+
+    if __name__ =='__main__':
+        show_cpu_info()
+        show_ram_info()
+
 
     # puts widgets on screen
     span.grid(row=0, column=0, padx=20, pady=20)
@@ -110,11 +206,16 @@ def mainWin():
     settings.grid(row=3, column=0, sticky="ew", pady=30)
     howtouse.grid(row=4, column=0, sticky="ew", pady=10)
     AeolianVoice.grid(row=5,column=0,sticky ="ew",pady=10 )
+    Toggle_btn.grid(row=6,column=0, sticky ="ew",pady=10 )
     credit.grid(row=5, column=0, sticky="sw", padx=(3,0))
     version.grid(row=5, column=0, sticky="se", padx=(375,0))
     bottomleft.grid(row=1, column=0, sticky="nsew")
     bottomright.grid(row=1, column=1, sticky="nsew")
-    mainimglbl.grid()
+    
+
+
+    
+
 
     #  puts frames on screen
     main.grid(row=0, column=1, sticky="nsew")
@@ -189,6 +290,8 @@ def validateFiles():
 def viewSettings(main, color, config, default):
     for widget in main.winfo_children():
         widget.grid_forget()
+        widget.place_forget()
+
     mainContent = tk.Frame(main, bg=color["s"])  # create frame
 
     #  creates tickbox vars
@@ -240,7 +343,6 @@ def viewSettings(main, color, config, default):
     setDefault = tk.Button(mainContent, image=imgscaled2, bg=color["s"], borderwidth=0, cursor="hand2", activebackground=color["s"], width=90, height=35, command=lambda: onDefault(save, config, default, themeChk, startupChk, minTrayChk, wtxt, htxt), highlightthickness=0)  # sets default values for widgets and saves
     setDefault.image = imgscaled2
     setDefault.grid(row=5, column=0, sticky="w", ipadx=20, ipady=10, padx=(70, 0), pady=(150, 0))
-
 
 
 
@@ -318,6 +420,7 @@ def showRes(wlbl, wtxt, hlbl, htxt, save):  # places resolution related widgets 
 def clearMain(frame):  # removes all widgets from the frame
     for widget in frame.winfo_children():
         widget.grid_forget()
+        widget.place_forget()
 
 
 def startCalibration(main, color, lbl):
@@ -352,6 +455,8 @@ def getRes():  # function to obtain the screen resolution from the settings file
             elif key == "hsize":
                 h = int(val)
     return w, h
+
+
 
 
 def startTracking(root):  # starts tracking
@@ -401,6 +506,7 @@ def howToUse(main, color):
     global websitebtn, frames, frame_index, frame_duration, githubbtn,frames1,frame_index1,frame_duration1
     for widget in main.winfo_children():
         widget.grid_forget()
+        widget.place_forget()
 
     # creates github btn
     img1 = Image.open("data\images\linkedin.gif")
@@ -420,6 +526,8 @@ def howToUse(main, color):
     frame_index1 = 0
     frame_duration1 = 100
     update_frame1()
+
+
     # img = Image.open("data\images\github.png")
     # resized = img.resize((256, 256), Image.ANTIALIAS)
     # image = ImageTk.PhotoImage(resized)
@@ -460,9 +568,11 @@ def howToUse(main, color):
     websitebtn.grid(column=1, row=0, padx=(120, 0), ipadx=5, ipady=5)
 
 
+
 def aeolian(main, color):
     for widget in main.winfo_children():
         widget.grid_forget()
+        widget.place_forget()
 
     aeolianContent = tk.Frame(main, bg=color["s"])  # create frame
     voiceBtn = tk.Button(aeolianContent, text="Aeolian Voice Assistant", font=('Arial', 18), bg=color["s"], fg=color["t"], relief="groove", borderwidth=2, highlightthickness=1, cursor="hand2",command = lambda:ask1(AolianLabel) )
@@ -471,10 +581,19 @@ def aeolian(main, color):
     AolianLabel.grid(row=1, column=2,)
     aeolianContent.grid(row=0, column=0, sticky="nsew")
 
+
+engine2 = tts.init()
+
 def ask1(AolianLabel):
-    print("ASk")
+    engine2.say("How Can I Assist You ? ")
+    engine2.runAndWait()
+   
     voice_data = recordAudio()
     print(voice_data)
+
+
+
+    
     AolianLabel.config(fg="red")
     respond(voice_data, AolianLabel)
 
@@ -490,34 +609,84 @@ def recordAudio(ask = False):
             voice_data = r.recognize_google(audio)
 
         except sr.UnknownValueError:
+            engine2.say('Sorry, i didnt get that')
+            engine2.runAndWait()
             print("Sorry i didnt get that")
         except sr.RequestError:
+            engine2.say('Sorry, Service is down')
+            engine2.runAndWait()
             print("Sorry Service is down")
         return voice_data
+
+
+
+
+
+
+def openNewTabInOperaGX():
+    try:
+        # Specify the path to the Opera GX executable
+        opera_gx_path = r"C:\Users\Justin Santos\AppData\Local\Programs\Opera GX\launcher.exe"  # Adjust the path as needed
+
+        # Use the webbrowser module to open a new tab in Opera GX
+        webbrowser.register('opera', None, webbrowser.BackgroundBrowser(opera_gx_path))
+        webbrowser.get('opera').open('google.com', new=2)
+
+        print('Opened a new tab in Opera GX')
+    except Exception as e:
+        print(f'Error opening a new tab in Opera GX: {str(e)}')
+
+
 
 def respond(voice_data, AolianLabel):
     if('what is your name') in voice_data:
         AolianLabel.config(fg ="green")
+        engine2.say('My name is Aeolian')
+        engine2.runAndWait()
         print('My name is Aeolian')
+        
     if 'what time is it' in voice_data:
         AolianLabel.config(fg ="green")
+        engine2.say(f'Date today is {ctime()}')
+        engine2.runAndWait()
         print(ctime())
         
     if 'search' in voice_data:
-        AolianLabel.config(fg ="green")
+        AolianLabel.config(fg="green")
+        engine2.say('What do you want to search for?')
+        engine2.runAndWait()
         search = recordAudio('What do you want to search for')
-        url ='https://google.com/search?q=' + search
-        webbrowser.get().open(url)
-        print('Here is what i found ' + search)
+        url = 'https://www.google.com/search?q=' + search  # Fixed URL
+        webbrowser.open(url)
+        engine2.say(f'This is what I found for {search}')
+        engine2.runAndWait()  # Added runAndWait() for proper audio playback
+        print(f'Here is what I found for "{search}"')
+
 
     if 'find a location' in voice_data:
         AolianLabel.config(fg ="green")
         location = recordAudio('what location do you want to search for ?')
         url ='https://google.nl/maps/place/' + location + '/&amp;'
         webbrowser.get().open(url)
+        engine2.say(f'Here is the location of {location}')
+        engine2.runAndWait()
         print('here is the location of ' + location)
+
+    if 'open a new tab' in voice_data:
+        AolianLabel.config(fg="green")
+        engine2.say('Opening a new tab in your web browser')
+        engine2.runAndWait()
+        openNewTabInOperaGX()
+
+
+
     if 'stop' in voice_data:
+        engine2.say('Thank you, Let me know if you need anything')
+        engine2.runAndWait()
         exit()
+
+delayCode = threading.Timer(1, respond)
+delayCode.start()
 
 
 mainWin()

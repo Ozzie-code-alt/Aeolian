@@ -1,12 +1,7 @@
 import math  # used to calculate max distance between points
-from cv2 import warpPerspective  # used in warping image
-from LScalibrate import warpImage  # used to warp image
 import cv2
-from ast import literal_eval  # gets settings from file and gets literal type from str type
 import numpy as np
 import mouse  # used to control mouse (dragging and drawing)
-from playsound import playsound  # used for ping sound when changing modes
-from threading import Thread  # used to thread playsound
 import mediapipe as mp
 import tkinter as tk
 import threading
@@ -16,19 +11,39 @@ import csv
 import copy
 import argparse
 import itertools
+import cv2 as cv
+import time
+
+import webbrowser
+
 from collections import Counter
 from collections import deque
-
-import cv2 as cv
-
+from cv2 import warpPerspective  # used in warping image
+from ast import literal_eval  # gets settings from file and gets literal type from str type
+from LScalibrate import warpImage  # used to warp image
+from playsound import playsound  # used for ping sound when changing modes
+from threading import Thread  # used to thread playsound
+from threading import Lock
 from utils import CvFpsCalc
 from model import KeyPointClassifier
 from model import PointHistoryClassifier
+from tkinter import ttk
 
+# window = None
+def save_video_source(source):
+    with open("video_source.txt", "w") as file:
+        file.write(str(source))
 
-window = None
-
+def load_video_source():
+    try:
+        with open("video_source.txt", "r") as file:
+            return int(file.read().strip())
+    except (FileNotFoundError, ValueError):
+        return 0  # Default to 0 if file not found or if it's invalid
+    
 def start(root, pointsstr, maskparamsmalformed, width, height):
+        # Initialize camera
+
     # gets literal vals from str
     points = literal_eval(pointsstr)
     maskparamsstr = ''.join([letter for letter in maskparamsmalformed if letter not in("array()")])
@@ -37,8 +52,10 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
     lower, upper = np.array(maskparams[0]), np.array(maskparams[1])
     
     root.withdraw()
-
-    cap = cv2.VideoCapture(1)
+    global cap
+    global video_source
+    video_source = load_video_source()  # Load video source from file
+    cap = cv2.VideoCapture(video_source)
     cap.set(15, -5) #  may have to change the 2nd arg. Only supported for some cameras. Testing with droidcam therefore cannot use this myself
     mat = warpImage(cap, points)  # creates warped image 
     hold = []  # list of points to detect when held
@@ -49,24 +66,35 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
     # drawing_utils = mp.solutions.drawing_utils
 #Hands Line Var
     # x1 = y1 = x2 = y2 = 0
-
     def run_tkinter():
-        window = tk.Tk()
-        window.title("Aeolian")
-        window.geometry("100x100")
+        global newwindow
+        newwindow = tk.Tk()
+        newwindow.title("Aeolian")
+        newwindow.geometry("300x100")
+        newwindow.resizable(width=False, height=False)
         def button_click():
-            print("Button clicked!")
+            # print("Button clicked!")
             main()
+        def switch_camera():
+            global video_source
+            video_source = (video_source + 1) % 3  # Cycle through 0, 1, 2
+            save_video_source(video_source)  # Save the new video source
 
-        button = tk.Button(window, text="Click Me!", command=button_click)
-        button.pack()
-        window.mainloop()
+        button = tk.Button(newwindow, text="Hand Gesture", command=button_click, background="blue", foreground="white", font=("Helvetica", 12))
+        button.pack(expand=True, fill="both")
+        btn_switch = ttk.Button(newwindow, text="Switch Camera - requires restart", command=switch_camera)
+        btn_switch.pack()
+        newwindow.mainloop()
+        return newwindow
         
-        return window
+
+
         
-    t1=threading.Thread(target=run_tkinter)
+        ## runs tkinter independently from the program and separately 
+    # lock = threading.Lock()
+    # t1=threading.Thread(target=run_tkinter,args=(lock,))
+    t1 = threading.Thread(target=run_tkinter)
     t1.start()
-
 
             
     while True:
@@ -133,7 +161,7 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
         # cv2.imshow('Image', image)
         # exits once ESC pressed or close button pressed
         if cv2.waitKey(1) & 0xFF == 27:
-            
+            newwindow.quit()
             break
         
        
@@ -147,13 +175,19 @@ def start(root, pointsstr, maskparamsmalformed, width, height):
 
 
 
-
-   
+ 
+    newwindow.quit()
+    newwindow.deiconify()
     cap.release()
     cv2.destroyAllWindows()
     root.deiconify()
 
 
+
+
+def close_Tkinter():
+    # newwindow.deiconify()
+    pass
 
     
 def setHold(count, hold, pts):
@@ -219,7 +253,7 @@ def draw(pos, w, h, previous):
 def get_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--device", type=int, default=0)
+    parser.add_argument("--device", type=int, default=2)
     parser.add_argument("--width", help='cap width', type=int, default=960)
     parser.add_argument("--height", help='cap height', type=int, default=540)
 
@@ -304,7 +338,7 @@ def main():
         # Process Key (ESC: end) #################################################
         key = cv.waitKey(1)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if key == ord('q'):
             break
 
         number, mode = select_mode(key, mode)
@@ -382,7 +416,15 @@ def main():
                 elif hand_gesture == 5:
                     perform_action("bigC")
                 elif hand_gesture == 3:
-                    perform_action("ok")
+                    pass
+                elif hand_gesture == 0:
+                    perform_action("open")
+                elif hand_gesture ==6:
+                    perform_action('right')
+                elif hand_gesture == 7:
+                    perform_action('left')
+                elif hand_gesture ==8:
+                    perform_action('peace')
 
 
         else:
@@ -397,6 +439,23 @@ def main():
     cap.release()
  
     cv2.destroyWindow('Frame2')
+    close_Tkinter()
+
+
+
+def openNewTabInOperaGX():
+    try:
+        # Specify the path to the Opera GX executable
+        opera_gx_path = r"C:\Users\Justin Santos\AppData\Local\Programs\Opera GX\launcher.exe"  # Adjust the path as needed
+
+        # Use the webbrowser module to open a new tab in Opera GX
+        webbrowser.register('opera', None, webbrowser.BackgroundBrowser(opera_gx_path))
+        webbrowser.get('opera').open('google.com', new=2)
+
+        print('Opened a new tab in Opera GX')
+    except Exception as e:
+        print(f'Error opening a new tab in Opera GX: {str(e)}')
+
     
 def perform_action(gesture):
     if gesture == "pointerUp":
@@ -413,9 +472,24 @@ def perform_action(gesture):
         pyautogui.keyDown("ctrl")
         pyautogui.scroll(-100)
         pyautogui.keyUp("ctrl")
+    elif gesture == "open":
+        pass
     elif gesture == "ok":
-        keyboard.press_and_release("q")
+        pyautogui.keyDown('q')
 
+    elif gesture == "right":
+        pass
+        # keyboard.press_and_release('right')
+        # time.sleep(1)
+    elif gesture == 'left':
+        pass
+        # keyboard.press_and_release('left')
+        # time.sleep(1)
+    elif gesture == 'peace':
+        pass
+        # openNewTabInOperaGX()
+        # time.sleep(1)
+     
 
 
 def select_mode(key, mode):
