@@ -661,6 +661,7 @@ def respond(voice_data, AolianLabel):
         print(f'Here is what I found for "{search}"')
 
 
+
     if 'find a location' in voice_data:
         AolianLabel.config(fg ="green")
         location = recordAudio('what location do you want to search for ?')
